@@ -1,0 +1,17 @@
+title: ChenChuLin的博客
+description: A network engineer, recording technology and life
+author: ChenChuLin
+lang: zh-CN
+theme: minima
+
+# 社交链接
+github_username: cxy-yao
+email: your@email.com
+
+# 分页
+paginate: 5
+paginate_path: "/page:num/"
+
+# 构建设置
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
