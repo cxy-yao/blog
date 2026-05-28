@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>网络故障排查结构化方法论</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,395 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">网络工程</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">网络故障排查结构化方法论</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#故障排查</span>
+            
+            <span class="tag">#运维方法论</span>
+            
+            <span class="tag">#网络排障</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <p>网络故障不可怕，可怕的是没有章法。本文介绍一套四步结构化排障流程，配合常见故障的根因链，帮你快速定位问题。</p>
+<!--more-->
+
+<h2 id="_1">四步排障法</h2>
+<pre><code>收集信息 → 隔离范围 → 定位根因 → 验证修复
+</code></pre>
+<h3 id="_2">第一步：收集信息</h3>
+<pre><code class="language-bash"># 1. 确认故障现象
+#    - 哪些业务受影响？
+#    - 什么时间开始的？
+#    - 影响范围（单机/单网段/全网)?
+
+# 2. 检查设备状态
+display cpu-usage
+display memory-usage
+display interface brief | include down|err
+display logbuffer | include ERROR|CRITICAL
+
+# 3. 检查变更记录
+display configuration changes
+# 有没有人刚改过配置？
+</code></pre>
+<h3 id="_3">第二步：隔离范围</h3>
+<pre><code class="language-bash"># 逐层排除，从物理层开始
+# L1 物理层：接口UP/DOWN？光模块正常？
+display interface 100GE1/0/1 | include line protocol
+display transceiver interface 100GE1/0/1
+
+# L2 数据链路层：MAC学习？VLAN正确？
+display mac-address interface 100GE1/0/1
+display vlan brief
+
+# L3 网络层：路由可达？下一跳正确？
+display ip routing-table 10.110.1.1
+ping -a 10.1.10.11 10.110.1.1
+
+# L4+ 应用层：端口可达？
+tcping 10.110.1.1 22
+</code></pre>
+<h3 id="_4">第三步：定位根因</h3>
+<p>关键思路：<strong>看日志、看计数器、看状态机</strong></p>
+<pre><code class="language-bash"># 日志是第一线索
+display logbuffer | include %Jun 28
+display trapbuffer
+
+# 接口计数器暴露链路质量
+display interface 100GE1/0/1 | include error|CRC|drop
+
+# 协议状态机揭示邻居问题
+display bgp peer | include Idle|Connect|Active
+display ospf peer brief
+</code></pre>
+<h3 id="_5">第四步：验证修复</h3>
+<pre><code class="language-bash"># 修复后必须验证
+# 1. 协议状态恢复正常
+display bgp peer  # 应该全是Established
+
+# 2. 业务恢复正常
+ping -c 100 10.110.1.1  # 连续ping确认稳定
+
+# 3. 监控一段时间
+display interface 100GE1/0/1 | include rate  # 流量是否正常
+</code></pre>
+<h2 id="_6">常见故障根因链</h2>
+<h3 id="1updown">故障1：接口频繁UP/DOWN</h3>
+<pre><code>现象：接口反复flapping
+├─ 物理层原因
+│  ├─ 光模块老化（检查收发光功率)
+│  ├─ 光纤弯曲/断裂（检查OTDR)
+│  └─ 端口硬件故障（换端口排除)
+├─ 协议层原因
+│  ├─ BFD误触发（调整检测间隔)
+│  └─ STP TC震荡（检查是否有环路)
+└─ 对端原因
+   └─ 对端设备重启/掉电
+</code></pre>
+<pre><code class="language-bash"># 排查命令
+display transceiver interface 100GE1/0/1  # 光功率
+display logbuffer | include LINK           # 链路事件
+display stp tc-bpdu statistics             # TC报文统计
+</code></pre>
+<h3 id="2bgp">故障2：BGP邻居无法建立</h3>
+<pre><code>现象：BGP邻居状态卡在Active/Connect
+├─ 连接层问题
+│  ├─ TCP 179端口不通（ACL过滤?)
+│  ├─ LoopBack不可达（路由缺失?)
+│  └─ MTU不匹配（分片导致TCP重传)
+├─ 配置问题
+│  ├─ AS号配错
+│  ├─ Router-ID冲突
+│  └─ 密码不匹配
+└─ 资源问题
+   └─ BGP进程内存不足
+</code></pre>
+<pre><code class="language-bash"># 排查命令
+display bgp peer 10.1.10.1 verbose  # 查看邻居详情
+tcping 10.1.10.1 179                 # 测试TCP连通性
+display acl 3001                     # 检查ACL是否阻断
+display bgp error                    # BGP错误计数
+</code></pre>
+<h3 id="3vxlan">故障3：VXLAN业务不通</h3>
+<pre><code>现象：二层业务跨VXLAN不通
+├─ Underlay问题
+│  ├─ VTEP LoopBack不可达
+│  └─ UDP 4789被ACL阻断
+├─ Overlay问题
+│  ├─ EVPN邻居未建立
+│  ├─ VNI-BD映射错误
+│  └─ NVE接口source IP错误
+├─ 接入侧问题
+│  ├─ VLAN-BD绑定错误
+│  └─ 接口PVID不匹配
+└─ 主机侧问题
+   ├─ IP/掩码配错
+   └─ 网关MAC不匹配
+</code></pre>
+<pre><code class="language-bash"># 排查命令
+ping -vpn-instance default 10.1.10.12  # 测试VTEP可达
+display bgp evpn peer                   # EVPN邻居
+display vxlan vni                       # VNI映射
+display mac-address remote              # 远端MAC学习
+display interface nve1                  # NVE接口状态
+</code></pre>
+<h3 id="4ospf">故障4：OSPF邻居震荡</h3>
+<pre><code>现象：OSPF邻居频繁Up/Down
+├─ Hello报文问题
+│  ├─ Hello/Dead间隔不匹配
+│  ├─ 区域ID不一致
+│  ├─ 认证密码错误
+│  └─ 接口MTU &lt; 1500（DBD报文被丢弃)
+├─ 网络问题
+│  ├─ 链路质量差（丢包导致Hello超时)
+│  └─ 带宽不足（LSA泛洪占满带宽)
+└─ 资源问题
+   └─ OSPF进程CPU占用过高
+</code></pre>
+<pre><code class="language-bash"># 排查命令
+display ospf peer 10.1.10.1 verbose  # 邻居详情
+display ospf interface GE1/0/1        # 接口OSPF参数
+display ospf error                    # OSPF错误计数
+</code></pre>
+<h2 id="_7">排障工具箱速查</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>工具</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>链路质量</td>
+<td>ping</td>
+<td><code>ping -c 100 -i 0.01 目标</code></td>
+</tr>
+<tr>
+<td>路径追踪</td>
+<td>tracert</td>
+<td><code>tracert -a 源IP 目标IP</code></td>
+</tr>
+<tr>
+<td>端口测试</td>
+<td>tcping</td>
+<td><code>tcping 目标 端口</code></td>
+</tr>
+<tr>
+<td>抓包分析</td>
+<td>mirror</td>
+<td><code>observe-port interface 100GE1/0/50</code></td>
+</tr>
+<tr>
+<td>配置对比</td>
+<td>diff</td>
+<td><code>display configuration changes</code></td>
+</tr>
+<tr>
+<td>流量分析</td>
+<td>NetStream</td>
+<td><code>display ip netstream cache</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">排障文档模板</h2>
+<pre><code class="language-markdown">## 故障报告
+
+**时间**：2026-05-28 14:30
+**现象**：Leaf-1下挂服务器无法访问Spine-1 LoopBack
+**影响范围**：Leaf-1所有服务器
+**根因**：OSPF邻居因MTU不匹配震荡，导致路由缺失
+**处理过程**：
+1. 14:30 发现故障，ping测试确认
+2. 14:35 display ospf peer发现邻居DOWN
+3. 14:40 检查接口MTU，发现对端MTU=1400
+4. 14:45 修改对端MTU为1500，邻居恢复
+5. 14:50 业务恢复正常
+**预防措施**：入网检查清单增加MTU校验项
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>总结</strong>：排障四步法（收集→隔离→定位→验证）适用于所有网络故障。关键原则：1) 先看日志再动手 2) 从下往上逐层排查 3) 修复后必须验证 4) 记录故障报告积累经验。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

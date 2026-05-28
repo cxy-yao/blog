@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>BGP路由选择算法13步详解与实战调优</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,319 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">网络工程</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">BGP路由选择算法13步详解与实战调优</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#BGP</span>
+            
+            <span class="tag">#路由协议</span>
+            
+            <span class="tag">#DC网络</span>
+            
+            <span class="tag">#华为</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <p>BGP选路不是只看MED，13步算法每一步都可能影响流量走向。本文逐条拆解，配合实际配置说明如何精确控制路径。</p>
+<!--more-->
+
+<h2 id="bgp">BGP选路概述</h2>
+<p>当BGP收到多条去往同一目的前缀的路由时，按以下13步顺序逐条比较，<strong>一旦某步能分出胜负，立即选择，不再继续</strong>：</p>
+<h2 id="1weightcisco">第1步：Weight（权重，Cisco私有）</h2>
+<pre><code class="language-bash"># Cisco设备专用，华为不支持
+# 本地始发路由Weight=32768，学习到的为0
+# 值越大越优先
+</code></pre>
+<blockquote>
+<p><strong>注意</strong>：华为CE交换机没有Weight属性，这一步直接跳过。</p>
+</blockquote>
+<h2 id="2local-preference">第2步：Local Preference（本地优先级）</h2>
+<pre><code class="language-bash"># 默认值100，越大越优先
+# 在IBGP邻居间传递，不出AS
+
+# 华为配置：设置LP为200（优先走这条)
+route-policy LP-SET permit node 10
+ apply local-preference 200
+
+# 应用到IBGP邻居入方向
+bgp 12100
+ peer 10.1.10.1 route-policy LP-SET import
+</code></pre>
+<p><strong>实战场景</strong>：多出口数据中心，通过LP控制出站流量走主链路。</p>
+<h2 id="3">第3步：本地始发优先</h2>
+<p>优先级顺序：
+1. <code>network</code> 命令发布的路由
+2. <code>aggregate-address</code> 聚合路由
+3. <code>import</code> 引入的路由</p>
+<p>本地始发的路由始终优于从邻居学到的。</p>
+<h2 id="4as-path">第4步：AS Path长度</h2>
+<pre><code class="language-bash"># AS路径越短越优先
+# 可以用prepend人为加长路径
+
+# 让这条路径不被优先选择（prepend 3次)
+route-policy AS-PREPEND permit node 10
+ apply as-path 65001 65001 65001 additive
+
+bgp 12100
+ peer 203.0.113.1 route-policy AS-PREPEND export
+</code></pre>
+<p><strong>实战场景</strong>：双ISP接入，用AS-PREPEND引导流量走主ISP。</p>
+<h2 id="5origin">第5步：Origin类型</h2>
+<p>优先级：<code>IGP(i)</code> &gt; <code>EGP(e)</code> &gt; <code>Incomplete(?)</code></p>
+<pre><code class="language-bash"># network命令产生 i
+# redistribute引入产生 ?
+# 一般不需要手动调整
+route-policy ORIGIN-SET permit node 10
+ apply origin igp
+</code></pre>
+<h2 id="6med">第6步：MED（多出口鉴别器）</h2>
+<pre><code class="language-bash"># 值越小越优先
+# 默认从邻居AS学到的MED才比较
+# 跨AS默认不比较MED（可配置强制比较)
+
+# 设置MED
+route-policy MED-SET permit node 10
+ apply cost 100
+
+# 强制比较所有邻居的MED（华为)
+bgp 12100
+ compare-med always
+</code></pre>
+<blockquote>
+<p><strong>注意</strong>：<code>compare-med always</code> 可能导致路由黑洞，慎用。建议只在同一邻居AS的路由间比较。</p>
+</blockquote>
+<h2 id="7ebgpibgp">第7步：EBGP优于IBGP</h2>
+<p>EBGP路由 &gt; IBGP路由 &gt; Local路由</p>
+<p>这条很直觉：外部学到的路由优先于内部学到的。</p>
+<h2 id="8igp">第8步：到下一跳的IGP度量值</h2>
+<pre><code class="language-bash"># 到NEXT_HOP的IGP cost越小越优先
+# 这就是为什么OSPF cost能影响BGP选路
+
+# 查看到下一跳的cost
+display ip routing-table 10.1.10.1
+</code></pre>
+<p><strong>实战场景</strong>：Spine-Leaf架构中，调整OSPF cost让BGP选择最优Spine。</p>
+<h2 id="9-13">第9-13步：高级属性</h2>
+<pre><code class="language-bash"># 第9步：Cluster List长度（RR环境)
+# 越短越优先
+
+# 第10步：Originator ID
+# 比较Router ID
+
+# 第11步：IP地址比较
+# 选择来自较小IP地址的邻居
+
+# 第12步：ECMP等价多路径
+# 以上都相同时负载均衡
+bgp 12100
+ maximum load-balancing 4
+
+# 第13步：最大前缀限制下的选择
+</code></pre>
+<h2 id="aispine-leaf">实战调优案例：AI算力网络Spine-Leaf</h2>
+<pre><code class="language-bash"># 场景：12台Leaf，2台Spine
+# 需求：Leaf1通过Spine1访问Leaf2，Spine2作为备份
+
+# Spine1的Leaf侧配置（低LP=备份)
+route-policy BACKUP-LP permit node 10
+ apply local-preference 80
+
+# Spine2的Leaf侧配置（默认LP=100=主路径)
+# 不需要额外配置，默认值即为主路径
+</code></pre>
+<h2 id="_1">选路排障命令</h2>
+<pre><code class="language-bash"># 查看BGP路由详情（含所有属性)
+display bgp routing-table 10.110.1.0/24
+
+# 查看为什么选了这条路由
+display bgp routing-table 10.110.1.0/24 verbose
+
+# 对比两条路由的属性
+display bgp routing-table 10.110.1.0/24 longer-match
+
+# 查看被抑制的路由
+display bgp routing-table suppressed
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>总结</strong>：BGP选路是一条决策链，前6步（Weight → LP → 本地始发 → AS Path → Origin → MED）是日常调优最常用的。理解每一步的权重，就能精确控制数据中心的流量走向。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

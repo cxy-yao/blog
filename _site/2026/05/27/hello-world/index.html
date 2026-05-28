@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>Hello World - 我的第一篇博客</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,213 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-27</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">随笔</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">Hello World - 我的第一篇博客</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#博客</span>
+            
+            <span class="tag">#开始</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <h1 id="hello-world">Hello World ! 🎉</h1>
+<p>这是我的第一篇博客文章。</p>
+<h2 id="_1">为什么要写博客？</h2>
+<p>作为一名网络工程师，我希望：
+- 记录工作中遇到的问题和解决方案
+- 分享技术学习心得
+- 建立自己的知识库</p>
+<h2 id="_2">技术栈</h2>
+<p>本博客使用：
+- <strong>GitHub Pages</strong> — 免费托管
+- <strong>Jekyll</strong> — 静态网站生成器
+- <strong>Markdown</strong> — 写作格式</p>
+<h2 id="_3">接下来的计划</h2>
+<ul>
+<li>[ ] 整理网络工程笔记</li>
+<li>[ ] 记录 AI 算力网络项目经验</li>
+<li>[ ] 分享 Cloudflare 使用技巧</li>
+</ul>
+<hr />
+<blockquote>
+<p>千里之行，始于足下。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

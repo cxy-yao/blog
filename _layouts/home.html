@@ -1,32 +1,213 @@
 ---
 layout: default
 ---
+<!-- Hero Section -->
 <section class="hero">
-    <h1 class="hero-title">ChenChuLin的博客</h1>
-    <p class="hero-subtitle">数据中心 · AI算力网络 · 路由交换 · Linux运维</p>
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+        <div class="hero-badge">🧑‍💻 Network Engineer & Tech Writer</div>
+        <h1 class="hero-title">
+            <span class="hero-title-line">ChenChuLin</span>
+            <span class="hero-title-sub">的博客</span>
+        </h1>
+        <div class="hero-typing">
+            <span class="typing-text" id="typingText"></span>
+            <span class="typing-cursor">|</span>
+        </div>
+        <p class="hero-desc">记录数据中心网络、AI算力架构、路由交换与Linux运维的技术笔记</p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-num">{{ site.posts.size }}</span>
+                <span class="stat-label">篇文章</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">{{ site.categories.size }}</span>
+                <span class="stat-label">个分类</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">{{ site.tags.size }}</span>
+                <span class="stat-label">个标签</span>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a href="#posts" class="btn-primary"><i class="fas fa-arrow-down"></i> 浏览文章</a>
+            <a href="/about/" class="btn-secondary"><i class="fas fa-user"></i> 关于我</a>
+        </div>
+    </div>
 </section>
-<section class="posts-section">
-    <h2 class="section-title"><i class="fas fa-newspaper"></i> 最新文章</h2>
+
+<style>
+/* ─── Hero Section ─── */
+.hero {
+    text-align: center; padding: 60px 0 80px; position: relative;
+    min-height: 55vh; display: flex; align-items: center; justify-content: center;
+}
+.hero-bg-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; height: 600px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.04) 40%, transparent 70%);
+    animation: hero-pulse 6s ease-in-out infinite alternate;
+}
+.hero-content { position: relative; z-index: 1; max-width: 700px; }
+.hero-badge {
+    display: inline-block; padding: 8px 20px; border-radius: 24px;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);
+    color: var(--accent-blue); font-size: 0.85rem; font-weight: 500;
+    margin-bottom: 28px; backdrop-filter: blur(10px);
+    animation: fade-in-up 0.6s ease forwards;
+}
+.hero-title {
+    font-size: 3.8rem; font-weight: 900; line-height: 1.15; margin-bottom: 20px;
+    animation: fade-in-up 0.6s ease 0.1s forwards; opacity: 0;
+}
+.hero-title-line {
+    display: block;
+    background: var(--gradient-main); background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: gradient-shift 6s ease infinite;
+}
+.hero-title-sub {
+    display: block; font-size: 2.5rem; font-weight: 300; color: var(--text-secondary);
+    -webkit-text-fill-color: var(--text-secondary);
+}
+.hero-typing {
+    font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent-cyan);
+    margin-bottom: 20px; height: 1.6em; display: flex; align-items: center; justify-content: center;
+    animation: fade-in-up 0.6s ease 0.2s forwards; opacity: 0;
+}
+.typing-cursor {
+    animation: blink 1s step-end infinite; margin-left: 2px; font-weight: 300;
+    color: var(--accent-cyan);
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.hero-desc {
+    color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8;
+    margin-bottom: 36px; max-width: 520px; margin-left: auto; margin-right: auto;
+    animation: fade-in-up 0.6s ease 0.3s forwards; opacity: 0;
+}
+.hero-stats {
+    display: flex; align-items: center; justify-content: center; gap: 32px;
+    margin-bottom: 40px; animation: fade-in-up 0.6s ease 0.4s forwards; opacity: 0;
+}
+.stat-item { text-align: center; }
+.stat-num {
+    display: block; font-size: 2rem; font-weight: 800;
+    background: var(--gradient-main); background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: gradient-shift 6s ease infinite;
+}
+.stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+.stat-divider { width: 1px; height: 36px; background: var(--glass-border); }
+.hero-actions {
+    display: flex; gap: 14px; justify-content: center;
+    animation: fade-in-up 0.6s ease 0.5s forwards; opacity: 0;
+}
+.btn-primary, .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px;
+    border-radius: var(--radius-sm); font-weight: 600; font-size: 0.95rem;
+    text-decoration: none !important; transition: var(--transition); cursor: pointer;
+}
+.btn-primary {
+    background: var(--gradient-main); color: #fff !important;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.4);
+    color: #fff !important;
+}
+.btn-secondary {
+    background: var(--glass); color: var(--text-secondary) !important;
+    border: 1px solid var(--glass-border);
+}
+.btn-secondary:hover {
+    background: var(--glass-hover); color: var(--text-primary) !important;
+    border-color: rgba(59,130,246,0.2); transform: translateY(-2px);
+}
+@keyframes hero-pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+/* ─── Posts Grid ─── */
+.posts-section { padding-top: 20px; }
+.posts-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px; margin-bottom: 60px;
+}
+
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.4rem; }
+    .hero-title-sub { font-size: 1.5rem; }
+    .hero-stats { gap: 20px; }
+    .stat-num { font-size: 1.6rem; }
+    .hero-actions { flex-direction: column; align-items: center; }
+    .posts-grid { grid-template-columns: 1fr; }
+    .hero { min-height: auto; padding: 40px 0 60px; }
+}
+</style>
+
+<!-- Posts Section -->
+<section class="posts-section" id="posts">
+    <h2 class="section-title"><i class="fas fa-fire"></i> 最新文章</h2>
     <div class="posts-grid">
-        {% for post in paginator.posts %}
-        <article class="post-card">
+        {% for post in site.posts %}
+        <article class="post-card reveal" style="animation-delay: {{ forloop.index | minus: 1 | times: 0.08 }}s">
             <div class="post-card-header">
-                <time>{{ post.date | date: "%Y-%m-%d" }}</time>
+                <time><i class="far fa-calendar-alt"></i> {{ post.date | date: "%Y-%m-%d" }}</time>
                 {% if post.categories.size > 0 %}
-                <span class="post-card-category">{{ post.categories | first }}</span>
+                {% assign cat = post.categories | first %}
+                <span class="post-card-category {% if cat == '网络工程' %}cat-network{% elsif cat == '数据中心' %}cat-datacenter{% elsif cat == 'Linux' %}cat-linux{% else %}cat-default{% endif %}">{{ cat }}</span>
                 {% endif %}
             </div>
             <h3 class="post-card-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
-            <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+            <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncatewords: 40 }}</p>
             {% if post.tags.size > 0 %}
             <div class="post-card-tags">
-                {% for tag in post.tags limit:3 %}
-                <span class="tag-small">#{{ tag }}</span>
+                {% for tag in post.tags limit:4 %}
+                <span class="tag-pill">#{{ tag }}</span>
                 {% endfor %}
             </div>
             {% endif %}
-            <a href="{{ post.url }}" class="read-more">阅读全文 <i class="fas fa-arrow-right"></i></a>
+            <a href="{{ post.url }}" class="read-more">阅读全文 <span class="arrow">→</span></a>
         </article>
         {% endfor %}
     </div>
 </section>
+
+<script>
+/* ─── Typing Effect ─── */
+(function() {
+    const texts = [
+        'Spine-Leaf架构设计 🌐',
+        'VXLAN EVPN实战配置 ⚡',
+        'BGP/OSPF协议深度解析 📡',
+        'AI算力网络组网 🤖',
+        '华为CE交换机运维 🔧',
+        '网络故障排查方法论 🛠️',
+        'WSL2效率工具箱 🐧',
+        'Python网络自动化 🐍'
+    ];
+    const el = document.getElementById('typingText');
+    let textIdx = 0, charIdx = 0, isDeleting = false, delay = 100;
+
+    function type() {
+        const current = texts[textIdx];
+        if (isDeleting) {
+            el.textContent = current.substring(0, charIdx - 1);
+            charIdx--; delay = 40;
+        } else {
+            el.textContent = current.substring(0, charIdx + 1);
+            charIdx++; delay = 80 + Math.random() * 60;
+        }
+        if (!isDeleting && charIdx === current.length) {
+            delay = 2500; isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false; textIdx = (textIdx + 1) % texts.length; delay = 400;
+        }
+        setTimeout(type, delay);
+    }
+    setTimeout(type, 800);
+})();
+</script>

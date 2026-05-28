@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>VXLAN EVPN数据中心网络实战：从原理到配置</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,388 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">数据中心</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">VXLAN EVPN数据中心网络实战：从原理到配置</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#VXLAN</span>
+            
+            <span class="tag">#EVPN</span>
+            
+            <span class="tag">#数据中心</span>
+            
+            <span class="tag">#华为CE</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <p>VXLAN EVPN已成为数据中心网络的事实标准。本文从控制面到数据面，用真实配置讲清楚VXLAN EVPN的核心机制。</p>
+<!--more-->
+
+<h2 id="vxlan-evpn">为什么是VXLAN EVPN？</h2>
+<p>传统数据中心网络的痛点：
+- <strong>VLAN数量限制</strong>：4096个VLAN不够用
+- <strong>STP收敛慢</strong>：链路故障收敛时间秒级
+- <strong>二层扩展性差</strong>：MAC表爆炸、广播风暴</p>
+<p>VXLAN EVPN的解决方案：
+- <strong>24位VNI</strong>：支持16M逻辑网络
+- <strong>三层overlay</strong>：underlay用IP路由，无STP
+- <strong>EVPN控制面</strong>：BGP通告MAC/IP路由，减少泛洪</p>
+<h2 id="_1">架构总览</h2>
+<pre><code>┌─────────────────────────────────────┐
+│          Spine (VTEP RR)            │
+│    AS 12100 / LoopBack 10.1.10.1   │
+├──────────┬──────────┬───────────────┤
+│          │          │               │
+│  Leaf-1  │  Leaf-2  │    Leaf-N     │
+│ AS 12101 │ AS 12102 │  AS 121xx    │
+│ VTEP     │ VTEP     │   VTEP       │
+└──────────┴──────────┴───────────────┘
+     │          │            │
+   Server    Server       Server
+</code></pre>
+<h2 id="underlayospf-bgp">Underlay配置：OSPF + BGP</h2>
+<h3 id="spine">Spine交换机</h3>
+<pre><code class="language-bash"># OSPF underlay（建立LoopBack可达性)
+router id 10.1.10.1
+ospf 1
+ area 0.0.0.0
+  network 10.1.10.1 0.0.0.0
+  network 10.110.101.0 0.0.0.255
+
+# BGP overlay（EVPN地址族)
+bgp 12100
+ router-id 10.1.10.1
+ peer 10.1.10.11 as-number 12101
+ peer 10.1.10.12 as-number 12102
+
+ ipv4-family unicast
+  peer 10.1.10.11 enable
+  peer 10.1.10.12 enable
+
+ l2vpn-family evpn
+  peer 10.1.10.11 enable
+  peer 10.1.10.11 reflect-client
+  peer 10.1.10.12 enable
+  peer 10.1.10.12 reflect-client
+</code></pre>
+<h3 id="leaf">Leaf交换机</h3>
+<pre><code class="language-bash"># OSPF underlay
+router id 10.1.10.11
+ospf 1
+ area 0.0.0.0
+  network 10.1.10.11 0.0.0.0
+  network 10.110.101.0 0.0.0.255
+
+# BGP overlay
+bgp 12101
+ router-id 10.1.10.11
+ peer 10.1.10.1 as-number 12100
+
+ ipv4-family unicast
+  peer 10.1.10.1 enable
+
+ l2vpn-family evpn
+  peer 10.1.10.1 enable
+</code></pre>
+<h2 id="overlayvxlanbd">Overlay配置：VXLAN隧道与BD</h2>
+<h3 id="bridge-domainvni">创建Bridge Domain和VNI映射</h3>
+<pre><code class="language-bash"># 创建BD，映射VNI
+bridge-domain 1001
+ vxlan vni 1001
+
+# 配置NVE接口（VTEP)
+interface Nve1
+ source 10.1.10.11
+ vni 1001 head-end peer-list protocol bgp
+</code></pre>
+<h3 id="_2">接入侧配置</h3>
+<pre><code class="language-bash"># 服务器接入接口
+interface 100GE1/0/1
+ port link-type trunk
+ port trunk allow-pass vlan 1001
+
+# VLAN绑定BD
+vlan 1001
+ bridge-domain 1001
+</code></pre>
+<h2 id="evpn">EVPN路由类型</h2>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>用途</th>
+<th>触发条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type-2 (MAC/IP)</td>
+<td>MAC+IP绑定通告</td>
+<td>主机上线、ARP学习</td>
+</tr>
+<tr>
+<td>Type-3 (Inclusive)</td>
+<td>VTEP成员发现</td>
+<td>VNI配置完成</td>
+</tr>
+<tr>
+<td>Type-5 (IP Prefix)</td>
+<td>IP前缀路由</td>
+<td>路由聚合</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># 查看EVPN路由
+display bgp evpn all
+
+# 查看Type-2路由（MAC/IP)
+display bgp evpn route-type 2
+
+# 查看Type-3路由（VTEP列表)
+display bgp evpn route-type 3
+</code></pre>
+<h2 id="irb">分布式网关（IRB）</h2>
+<pre><code class="language-bash"># 配置VBDIF接口作为网关
+interface Vbdif1001
+ ip address 10.110.1.1 255.255.255.0
+ mac-address 0000-5e00-0101
+ arp collect host-information
+</code></pre>
+<h2 id="_3">关键排障命令</h2>
+<pre><code class="language-bash"># 1. 检查VXLAN隧道状态
+display vxlan tunnel all
+# 正常状态应为UP
+
+# 2. 检查NVE接口
+display interface nve1
+# 确认source IP正确
+
+# 3. 检查EVPN邻居
+display bgp evpn peer
+# 确认Established
+
+# 4. 检查远端MAC学习
+display mac-address remote
+# 确认远端MAC已学习
+
+# 5. 检查VNI映射
+display vxlan vni
+# 确认VNI-BD映射正确
+
+# 6. 抓包排查
+display capture-packet interface 100GE1/0/1
+</code></pre>
+<h2 id="_4">常见问题</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+<th>排查命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VXLAN隧道DOWN</td>
+<td>LoopBack不可达</td>
+<td><code>ping 10.1.10.12</code></td>
+</tr>
+<tr>
+<td>MAC未学习到远端</td>
+<td>EVPN邻居异常</td>
+<td><code>display bgp evpn peer</code></td>
+</tr>
+<tr>
+<td>业务不通</td>
+<td>BD-VNI映射错误</td>
+<td><code>display vxlan vni</code></td>
+</tr>
+<tr>
+<td>广播风暴</td>
+<td>ARP抑制未开启</td>
+<td><code>display arp suppression</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>总结</strong>：VXLAN EVPN的核心是"控制面用BGP EVPN通告MAC/IP，数据面用VXLAN封装在IP网络上转发"。配置三步走：Underlay(OSPF) → Overlay(BGP EVPN) → 接入(BD+VNI)。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>标签</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link active"><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,372 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <section class="tags-page">
+    <h1 class="section-title reveal"><i class="fas fa-tags"></i> 标签云</h1>
+    <div class="tags-cloud reveal">
+        
+        
+        <a href="#tag-AI算力" class="tag-cloud-item" data-count="1">
+            #AI算力 <span>1</span>
+        </a>
+        
+        <a href="#tag-BGP" class="tag-cloud-item" data-count="1">
+            #BGP <span>1</span>
+        </a>
+        
+        <a href="#tag-CE交换机" class="tag-cloud-item" data-count="1">
+            #CE交换机 <span>1</span>
+        </a>
+        
+        <a href="#tag-DC网络" class="tag-cloud-item" data-count="1">
+            #DC网络 <span>1</span>
+        </a>
+        
+        <a href="#tag-EVPN" class="tag-cloud-item" data-count="1">
+            #EVPN <span>1</span>
+        </a>
+        
+        <a href="#tag-Python" class="tag-cloud-item" data-count="1">
+            #Python <span>1</span>
+        </a>
+        
+        <a href="#tag-RoCEv2" class="tag-cloud-item" data-count="1">
+            #RoCEv2 <span>1</span>
+        </a>
+        
+        <a href="#tag-Spine-Leaf" class="tag-cloud-item" data-count="1">
+            #Spine-Leaf <span>1</span>
+        </a>
+        
+        <a href="#tag-VXLAN" class="tag-cloud-item" data-count="1">
+            #VXLAN <span>1</span>
+        </a>
+        
+        <a href="#tag-WSL2" class="tag-cloud-item" data-count="1">
+            #WSL2 <span>1</span>
+        </a>
+        
+        <a href="#tag-华为" class="tag-cloud-item" data-count="2">
+            #华为 <span>2</span>
+        </a>
+        
+        <a href="#tag-华为CE" class="tag-cloud-item" data-count="1">
+            #华为CE <span>1</span>
+        </a>
+        
+        <a href="#tag-命令速查" class="tag-cloud-item" data-count="1">
+            #命令速查 <span>1</span>
+        </a>
+        
+        <a href="#tag-故障排查" class="tag-cloud-item" data-count="1">
+            #故障排查 <span>1</span>
+        </a>
+        
+        <a href="#tag-效率工具" class="tag-cloud-item" data-count="1">
+            #效率工具 <span>1</span>
+        </a>
+        
+        <a href="#tag-数据中心" class="tag-cloud-item" data-count="1">
+            #数据中心 <span>1</span>
+        </a>
+        
+        <a href="#tag-网络排障" class="tag-cloud-item" data-count="1">
+            #网络排障 <span>1</span>
+        </a>
+        
+        <a href="#tag-网络架构" class="tag-cloud-item" data-count="1">
+            #网络架构 <span>1</span>
+        </a>
+        
+        <a href="#tag-网络自动化" class="tag-cloud-item" data-count="1">
+            #网络自动化 <span>1</span>
+        </a>
+        
+        <a href="#tag-路由协议" class="tag-cloud-item" data-count="1">
+            #路由协议 <span>1</span>
+        </a>
+        
+        <a href="#tag-运维" class="tag-cloud-item" data-count="1">
+            #运维 <span>1</span>
+        </a>
+        
+        <a href="#tag-运维方法论" class="tag-cloud-item" data-count="1">
+            #运维方法论 <span>1</span>
+        </a>
+        
+    </div>
+
+    <div class="tags-list">
+        
+        <div class="tag-section reveal" id="tag-AI算力">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> AI算力 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-BGP">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> BGP <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-CE交换机">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> CE交换机 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-DC网络">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> DC网络 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-EVPN">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> EVPN <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-Python">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> Python <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-RoCEv2">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> RoCEv2 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-Spine-Leaf">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> Spine-Leaf <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-VXLAN">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> VXLAN <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-WSL2">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> WSL2 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-华为">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 华为 <span class="tag-count">2 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-华为CE">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 华为CE <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-命令速查">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 命令速查 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-故障排查">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 故障排查 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-效率工具">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 效率工具 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-数据中心">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 数据中心 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-网络排障">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 网络排障 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-网络架构">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 网络架构 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-网络自动化">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 网络自动化 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-路由协议">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 路由协议 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-运维">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 运维 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="tag-section reveal" id="tag-运维方法论">
+            <h2 class="tag-name"><i class="fas fa-hashtag"></i> 运维方法论 <span class="tag-count">1 篇</span></h2>
+            <ul class="tag-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</section>
+
+<style>
+.tags-page { max-width: 900px; margin: 0 auto; }
+.tags-cloud {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 48px;
+    background: var(--bg-card); border-radius: var(--radius); padding: 32px;
+    border: 1px solid var(--glass-border); backdrop-filter: blur(16px);
+}
+.tag-cloud-item {
+    font-size: 0.92rem; color: var(--accent-cyan) !important;
+    background: rgba(6,182,212,0.06); padding: 8px 18px; border-radius: 20px;
+    font-weight: 500; transition: var(--transition-fast);
+    text-decoration: none !important; border: 1px solid rgba(6,182,212,0.1);
+}
+.tag-cloud-item:hover {
+    background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.25);
+    transform: translateY(-2px);
+}
+.tag-cloud-item span { font-size: 0.72rem; color: var(--text-muted); margin-left: 4px; }
+.tag-cloud-item[data-count="1"] { font-size: 0.82rem; opacity: 0.6; }
+.tag-cloud-item[data-count="2"] { font-size: 0.92rem; }
+.tag-cloud-item[data-count="3"] { font-size: 1rem; font-weight: 600; }
+.tags-list { display: flex; flex-direction: column; gap: 24px; }
+.tag-section {
+    background: var(--bg-card); border-radius: var(--radius); padding: 28px;
+    border: 1px solid var(--glass-border); backdrop-filter: blur(16px);
+}
+.tag-name {
+    font-size: 1.2rem; font-weight: 700; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+}
+.tag-name i { color: var(--accent-cyan); }
+.tag-count {
+    font-size: 0.78rem; color: var(--text-muted); margin-left: auto;
+    background: rgba(6,182,212,0.08); padding: 4px 12px; border-radius: 20px;
+}
+.tag-posts { list-style: none; padding: 0; }
+.tag-posts li {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: var(--transition-fast);
+}
+.tag-posts li:last-child { border-bottom: none; }
+.tag-posts li:hover { padding-left: 8px; }
+.tag-posts time {
+    color: var(--text-muted); font-size: 0.82rem;
+    font-family: var(--font-mono); min-width: 100px;
+}
+.tag-posts a {
+    color: var(--text-secondary); font-weight: 500;
+    text-decoration: none !important; transition: var(--transition-fast);
+}
+.tag-posts a:hover { color: var(--accent-blue); }
+@media (max-width: 768px) {
+    .tag-posts li { flex-direction: column; align-items: flex-start; gap: 4px; }
+}
+</style>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

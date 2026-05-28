@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>WSL2网络工程师效率工具箱</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,397 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">Linux</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">WSL2网络工程师效率工具箱</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#WSL2</span>
+            
+            <span class="tag">#效率工具</span>
+            
+            <span class="tag">#Python</span>
+            
+            <span class="tag">#网络自动化</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <p>在WSL2环境下搭建一套网络工程师的效率工具链——从SSH管理到自动化脚本，从网络抓包到文档写作，全流程覆盖。</p>
+<!--more-->
+
+<h2 id="_1">基础环境配置</h2>
+<h3 id="wsl2">WSL2网络注意事项</h3>
+<pre><code class="language-bash"># WSL2使用NAT网络，IP会变化
+# 查看WSL2 IP
+hostname -I
+
+# 端口映射到Windows（从外部访问WSL服务)
+# Windows PowerShell执行：
+netsh interface portproxy add v4tov4 listenport=8080 listenaddress=0.0.0.0 connectport=8080 connectaddress=$(wsl hostname -I | cut -d' ' -f1)
+</code></pre>
+<h3 id="_2">必装工具清单</h3>
+<pre><code class="language-bash"># 网络工具
+sudo apt install -y mtr-tiny nmap tcpdump iperf3 netcat-openbsd
+
+# SSH管理
+sudo apt install -y openssh-client autossh
+
+# Python环境
+sudo apt install -y python3-pip python3-venv
+python3 -m venv ~/venvs/nettools
+source ~/venvs/nettools/activate
+pip install netmiko paramiko napalm nornir
+
+# 其他工具
+sudo apt install -y jq htop tree fzf ripgrep bat
+</code></pre>
+<h2 id="ssh">SSH连接管理</h2>
+<h3 id="ssh-config">SSH Config优化</h3>
+<pre><code class="language-bash"># ~/.ssh/config
+Host spine1
+    HostName 192.168.17.10
+    User admin
+    IdentityFile ~/.ssh/id_rsa
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+
+Host leaf*
+    ProxyJump spine1
+    User admin
+
+# 通配符匹配
+Host 192.168.17.*
+    User admin
+    StrictHostKeyChecking no
+</code></pre>
+<h3 id="sshpass">sshpass批量管理</h3>
+<pre><code class="language-bash"># 安装
+sudo apt install sshpass
+
+# 批量执行命令
+for host in spine1 leaf1 leaf2; do
+    echo &quot;=== $host ===&quot;
+    sshpass -p 'password' ssh -o StrictHostKeyChecking=no admin@$host &quot;display version | include Version&quot;
+done
+</code></pre>
+<h2 id="python">Python网络自动化</h2>
+<h3 id="netmiko">Netmiko批量配置</h3>
+<pre><code class="language-python">from netmiko import ConnectHandler
+from concurrent.futures import ThreadPoolExecutor
+
+devices = [
+    {&quot;device_type&quot;: &quot;huawei&quot;, &quot;host&quot;: &quot;192.168.17.10&quot;, 
+     &quot;username&quot;: &quot;admin&quot;, &quot;password&quot;: &quot;pass&quot;},
+    {&quot;device_type&quot;: &quot;huawei&quot;, &quot;host&quot;: &quot;192.168.17.11&quot;,
+     &quot;username&quot;: &quot;admin&quot;, &quot;password&quot;: &quot;pass&quot;},
+]
+
+def config_device(device):
+    conn = ConnectHandler(**device)
+    output = conn.send_command(&quot;display version | include Version&quot;)
+    conn.disconnect()
+    return f&quot;{device['host']}: {output.strip()}&quot;
+
+with ThreadPoolExecutor(max_workers=4) as pool:
+    results = list(pool.map(config_device, devices))
+    for r in results:
+        print(r)
+</code></pre>
+<h3 id="nornir">Nornir框架</h3>
+<pre><code class="language-python">from nornir import InitNornir
+from nornir_netmiko.tasks import netmiko_send_command
+from nornir_utils.plugins.functions import print_result
+
+nr = InitNornir(config_file=&quot;config.yaml&quot;)
+
+result = nr.run(
+    task=netmiko_send_command,
+    command_string=&quot;display interface brief&quot;
+)
+print_result(result)
+</code></pre>
+<h2 id="_3">网络诊断工具</h2>
+<h3 id="mtr">mtr路由追踪</h3>
+<pre><code class="language-bash"># 持续追踪路径质量
+mtr -r -c 100 10.1.10.1
+
+# 输出解读：
+# Loss%  — 丢包率
+# Snt    — 发包数
+# Last/Avg — 延迟
+</code></pre>
+<h3 id="tcpdump">tcpdump抓包</h3>
+<pre><code class="language-bash"># 抓取BGP报文（端口179)
+sudo tcpdump -i eth0 port 179 -nn -v
+
+# 抓取OSPF报文（协议号89)
+sudo tcpdump -i eth0 proto 89 -nn
+
+# 抓取VXLAN封装（UDP 4789)
+sudo tcpdump -i eth0 udp port 4789 -nn
+
+# 保存pcap文件（用Wireshark分析)
+sudo tcpdump -i eth0 -w capture.pcap -c 1000
+</code></pre>
+<h3 id="iperf3">iperf3带宽测试</h3>
+<pre><code class="language-bash"># 服务端
+iperf3 -s -p 5201
+
+# 客户端（TCP测试)
+iperf3 -c 10.1.10.1 -p 5201 -t 30 -P 4
+
+# 客户端（UDP测试，100Mbps)
+iperf3 -c 10.1.10.1 -p 5201 -u -b 100M
+</code></pre>
+<h2 id="_4">文档与知识管理</h2>
+<h3 id="markdown">Markdown写作</h3>
+<pre><code class="language-bash"># 推荐：直接用VSCode + Markdown Preview Enhanced
+code ~/workspace/
+
+# 命令行转换
+pandoc input.md -o output.html --standalone
+</code></pre>
+<h3 id="_5">知识库构建</h3>
+<pre><code class="language-bash"># 目录结构建议
+knowledge-base/
+├── 01-网络基础/
+│   ├── TCP-IP协议栈.md
+│   └── 以太网技术.md
+├── 02-路由交换/
+│   ├── OSPF配置指南.md
+│   └── BGP详解.md
+├── 03-数据中心/
+│   ├── VXLAN-EVPN.md
+│   └── Spine-Leaf架构.md
+└── 04-故障案例/
+    ├── BGP路由泄露.md
+    └── OSPF邻居震荡.md
+</code></pre>
+<h2 id="_6">自动化脚本集</h2>
+<h3 id="_7">设备健康检查</h3>
+<pre><code class="language-bash">#!/bin/bash
+# health_check.sh — 批量设备巡检
+HOSTS=&quot;spine1 leaf1 leaf2 leaf3&quot;
+DATE=$(date +%Y%m%d)
+REPORT=&quot;health_report_${DATE}.txt&quot;
+
+for host in $HOSTS; do
+    echo &quot;=== $host ===&quot; &gt;&gt; $REPORT
+    sshpass -p 'pass' ssh admin@$host &quot;
+        display cpu-usage
+        display memory-usage
+        display interface brief | include down
+        display logbuffer | tail 10
+    &quot; &gt;&gt; $REPORT 2&gt;&amp;1
+    echo &quot;&quot; &gt;&gt; $REPORT
+done
+echo &quot;Report saved to $REPORT&quot;
+</code></pre>
+<h3 id="_8">配置备份</h3>
+<pre><code class="language-bash">#!/bin/bash
+# backup_config.sh — 自动备份配置到Git
+BACKUP_DIR=~/config-backup
+cd $BACKUP_DIR
+
+for host in spine1 leaf1 leaf2; do
+    sshpass -p 'pass' ssh admin@$host &quot;display saved-configuration&quot; &gt; ${host}.cfg
+done
+
+git add -A
+git commit -m &quot;Config backup $(date +%Y-%m-%d_%H:%M)&quot;
+git push
+</code></pre>
+<h2 id="tmux">tmux多窗口管理</h2>
+<pre><code class="language-bash"># 安装
+sudo apt install tmux
+
+# 创建网络运维session
+tmux new-session -s netops -d
+tmux send-keys -t netops &quot;ssh spine1&quot; C-m
+tmux split-window -h -t netops
+tmux send-keys -t netops &quot;ssh leaf1&quot; C-m
+tmux split-window -v -t netops
+tmux send-keys -t netops &quot;mtr 10.1.10.1&quot; C-m
+tmux attach -t netops
+</code></pre>
+<hr />
+<blockquote>
+<p><strong>总结</strong>：WSL2是网络工程师的理想工作环境——原生Linux工具、SSH无缝连接、Python自动化一应俱全。关键配置：1) SSH Config简化连接 2) Netmiko/Nornir自动化 3) tmux多窗口 4) 知识库结构化管理。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

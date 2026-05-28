@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>AI算力网络架构设计：Spine-Leaf组网要点</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,402 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<article class="post-detail">
+    <header class="post-header reveal">
+        <div class="post-meta">
+            <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+            
+            <span class="post-categories">
+                <i class="fas fa-folder-open"></i>
+                
+                <span class="category-tag">数据中心</span>
+                
+            </span>
+            
+            <span class="reading-time"><i class="far fa-clock"></i> <span id="readTime"></span></span>
+        </div>
+        <h1 class="post-title">AI算力网络架构设计：Spine-Leaf组网要点</h1>
+        
+        <div class="post-tags">
+            
+            <span class="tag">#AI算力</span>
+            
+            <span class="tag">#Spine-Leaf</span>
+            
+            <span class="tag">#网络架构</span>
+            
+            <span class="tag">#RoCEv2</span>
+            
+        </div>
+        
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc-panel" id="tocPanel">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list" id="tocList"></ul>
+    </nav>
+
+    <div class="post-content reveal" id="postContent">
+        <p>AI训练集群对网络的要求与传统数据中心截然不同——低延迟、零丢包、大带宽是硬指标。本文总结AI算力网络Spine-Leaf架构的设计要点。</p>
+<!--more-->
+
+<h2 id="ai">AI训练网络的特殊需求</h2>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>传统DC</th>
+<th>AI训练集群</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>东西向带宽</td>
+<td>10-25Gbps/服务器</td>
+<td>100-400Gbps/GPU节点</td>
+</tr>
+<tr>
+<td>延迟要求</td>
+<td>&lt;1ms</td>
+<td>&lt;10μs（RDMA)</td>
+</tr>
+<tr>
+<td>丢包容忍</td>
+<td>少量可接受</td>
+<td>零丢包（RoCEv2)</td>
+</tr>
+<tr>
+<td>流量模型</td>
+<td>随机多对多</td>
+<td>All-Reduce同步流量</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">网络架构设计</h2>
+<h3 id="_2">三层角色划分</h3>
+<pre><code>┌──────────────────────────────────────────┐
+│              Spine Layer                  │
+│  AS 12100, LoopBack 10.1.10.1-2         │
+│  400GE上行，无状态转发                    │
+├────────────┬────────────┬────────────────┤
+│   Leaf-1   │   Leaf-2   │    Leaf-12     │
+│  AS 12101  │  AS 12102  │   AS 12112    │
+│  25/100GE  │  25/100GE  │   25/100GE    │
+│  接入GPU节点│  接入存储  │   接入管理    │
+└────────────┴────────────┴────────────────┘
+</code></pre>
+<h3 id="_3">三种网络平面</h3>
+<table>
+<thead>
+<tr>
+<th>平面</th>
+<th>网段</th>
+<th>VLAN</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数面（昇腾)</td>
+<td>10.110.x.0/24</td>
+<td>1001-1099</td>
+<td>GPU通信（HCCP/RoCEv2)</td>
+</tr>
+<tr>
+<td>参数面（NVIDIA)</td>
+<td>10.120.x.0/24</td>
+<td>1101-1199</td>
+<td>NCCL/RDMA通信</td>
+</tr>
+<tr>
+<td>样本面</td>
+<td>10.130.x.0/24</td>
+<td>1201-1299</td>
+<td>数据加载</td>
+</tr>
+<tr>
+<td>业务面</td>
+<td>81.192.0.0/24</td>
+<td>2001+</td>
+<td>推理服务、API</td>
+</tr>
+<tr>
+<td>带外管理</td>
+<td>172.16.0.0/24</td>
+<td>100</td>
+<td>IPMI/BMC</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spine-leaf">Spine-Leaf互联设计</h2>
+<pre><code class="language-bash"># Spine-Leaf点对点互联网段：10.110.101.0/24
+# 每条链路一个/30子网
+
+# Spine1 &lt;-&gt; Leaf1: 10.110.101.0/30
+# Spine1 &lt;-&gt; Leaf2: 10.110.101.4/30
+# Spine2 &lt;-&gt; Leaf1: 10.110.101.8/30
+# Spine2 &lt;-&gt; Leaf2: 10.110.101.12/30
+</code></pre>
+<h2 id="rocev2">RoCEv2无损网络配置</h2>
+<h3 id="pfc">PFC（优先级流控)</h3>
+<pre><code class="language-bash"># 启用PFC，优先级4用于RDMA traffic
+dcb pfc enable
+dcb pfc priority 4
+
+# 接口应用
+interface 100GE1/0/1
+ dcb pfc enable
+ dcb pfc priority 4
+</code></pre>
+<h3 id="ecn">ECN（显式拥塞通知)</h3>
+<pre><code class="language-bash"># 配置ECN标记阈值
+qos wred ECN-WRED
+ color green low-limit 80 high-limit 120 discard-percentage 100
+ color yellow low-limit 60 high-limit 100 discard-percentage 100
+
+# 队列调度
+interface 100GE1/0/1
+ qos queue 4 wred ECN-WRED
+</code></pre>
+<h3 id="dcqcn">DCQCN（数据中心量化拥塞通知)</h3>
+<pre><code class="language-bash"># 在拥塞点交换机上配置
+# 当队列深度超过阈值，标记CE位
+# 发送端收到ECN后降速
+</code></pre>
+<h2 id="_4">防止微突发的设计</h2>
+<pre><code class="language-bash"># 出方向流量整形（避免缓冲区溢出)
+interface 100GE1/0/1
+ qos car cir 80000 cbs 10000
+
+# 入方向风暴抑制
+interface 100GE1/0/1
+ storm suppression broadcast packets 100
+ storm suppression multicast packets 100
+ storm suppression unicast packets 1000
+</code></pre>
+<h2 id="_5">网络可靠性设计</h2>
+<h3 id="m-lag">M-LAG（跨设备链路聚合)</h3>
+<pre><code class="language-bash"># 配置M-LAG双活
+dfs-group 1
+ priority 100
+ source ip-address 10.1.10.11 peer-ip-address 10.1.10.12
+
+interface Eth-Trunk 10
+ trunkport 100GE1/0/1
+ trunkport 100GE1/0/2
+ mode lacp-static
+ dfs-group 1
+</code></pre>
+<h3 id="bfd">BFD快速检测</h3>
+<pre><code class="language-bash"># BFD for OSPF（毫秒级收敛)
+ospf 1
+ area 0.0.0.0
+  bfd all-interfaces enable
+
+# BFD参数调整
+bfd
+ min-tx-interval 100
+ min-rx-interval 100
+ detect-multiplier 3
+</code></pre>
+<h2 id="_6">监控与告警</h2>
+<pre><code class="language-bash"># 接口带宽利用率监控（阈值告警)
+snmp-agent trap enable feature-name IFNET
+snmp-agent trap enable feature-name BASETRAP
+
+# 流量采样（sFlow/NetStream)
+sflow collector 172.16.0.100 port 6343
+interface 100GE1/0/1
+ sflow sampling-rate 1000
+</code></pre>
+<h2 id="_7">容量规划参考</h2>
+<table>
+<thead>
+<tr>
+<th>GPU节点规模</th>
+<th>Spine数量</th>
+<th>Leaf数量</th>
+<th>Spine-Leaf带宽</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>64台（512卡)</td>
+<td>2</td>
+<td>4</td>
+<td>2×400GE</td>
+</tr>
+<tr>
+<td>128台（1024卡)</td>
+<td>4</td>
+<td>8</td>
+<td>4×400GE</td>
+</tr>
+<tr>
+<td>256台（2048卡)</td>
+<td>4</td>
+<td>12</td>
+<td>4×400GE</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>总结</strong>：AI算力网络设计的核心是"无损、低延迟、高带宽"。Spine-Leaf架构保证等价路径，PFC+ECN保证零丢包，M-LAG+BFD保证高可用。规划时重点关注参数面网段和VLAN划分，这是最容易出问题的地方。</p>
+</blockquote>
+    </div>
+
+    <footer class="post-footer reveal">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
+    </footer>
+</article>
+
+<style>
+/* ─── Post-specific enhancements ─── */
+.post-content .code-block { position: relative; }
+
+/* Syntax highlighting colors for code blocks */
+.post-content pre code .kw { color: #c084fc; }   /* keywords */
+.post-content pre code .fn { color: #67e8f9; }   /* functions */
+.post-content pre code .str { color: #86efac; }  /* strings */
+.post-content pre code .cm { color: #475569; }   /* comments */
+.post-content pre code .num { color: #fbbf24; }  /* numbers */
+
+/* Anchor links for headings */
+.post-content h2[id], .post-content h3[id] { scroll-margin-top: calc(var(--nav-height) + 24px); }
+.post-content h2[id]:hover::before, .post-content h3[id]:hover::before {
+    content: '#'; position: absolute; left: -1.5em; color: var(--accent-blue); opacity: 0.5; font-size: 0.8em;
+}
+
+/* Callout boxes */
+.post-content .callout {
+    padding: 20px 24px; border-radius: var(--radius-sm); margin: 24px 0;
+    border-left: 3px solid; font-size: 0.95rem;
+}
+.post-content .callout-info { background: rgba(59,130,246,0.06); border-color: var(--accent-blue); }
+.post-content .callout-warn { background: rgba(245,158,11,0.06); border-color: var(--accent-amber); }
+.post-content .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent-emerald); }
+
+/* Image zoom */
+.post-content img { cursor: zoom-in; transition: transform 0.3s ease; }
+.post-content img:hover { transform: scale(1.02); }
+</style>
+
+<script>
+/* ─── Reading Progress ─── */
+const progressBar = document.getElementById('readingProgress');
+const postContent = document.getElementById('postContent');
+window.addEventListener('scroll', () => {
+    if (!postContent) return;
+    const rect = postContent.getBoundingClientRect();
+    const total = postContent.scrollHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+});
+
+/* ─── Reading Time Estimate ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const readTimeEl = document.getElementById('readTime');
+    if (!content || !readTimeEl) return;
+    const text = content.textContent || content.innerText;
+    const chars = text.length;
+    const mins = Math.max(1, Math.ceil(chars / 500)); // ~500 chars/min for Chinese
+    readTimeEl.textContent = '约 ' + mins + ' 分钟';
+})();
+
+/* ─── Auto-generate Table of Contents ─── */
+(function() {
+    const content = document.getElementById('postContent');
+    const tocList = document.getElementById('tocList');
+    const tocPanel = document.getElementById('tocPanel');
+    if (!content || !tocList || !tocPanel) return;
+
+    const headings = content.querySelectorAll('h2, h3');
+    if (headings.length < 2) { tocPanel.style.display = 'none'; return; }
+
+    headings.forEach((h, i) => {
+        // Use existing ID from markdown TOC extension, or generate one
+        const id = h.id || 'heading-' + i;
+        if (!h.id) h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/^#/, '');
+        a.className = h.tagName === 'H3' ? 'toc-h3' : '';
+        a.dataset.target = id;
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    // Active state on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                tocLinks.forEach(a => a.classList.remove('active'));
+                const active = tocList.querySelector('a[data-target="' + entry.target.id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+})();
+
+/* ─── Code Copy Button ─── */
+(function() {
+    document.querySelectorAll('.post-content pre').forEach(pre => {
+        // Wrap pre content
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // Detect language from class
+        let lang = 'Code';
+        const classes = (code.className || '').split(' ');
+        for (const cls of classes) {
+            if (cls.startsWith('language-')) { lang = cls.replace('language-', ''); break; }
+        }
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = '<span class="code-lang">' + lang + '</span>';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy';
+        copyBtn.textContent = '复制';
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                copyBtn.textContent = '已复制 ✓';
+                copyBtn.style.color = 'var(--accent-emerald)';
+                copyBtn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            });
+        });
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

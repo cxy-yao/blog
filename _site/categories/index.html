@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title>分类</title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link "><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link active"><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,101 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <section class="categories-page">
+    <h1 class="section-title reveal"><i class="fas fa-folder-open"></i> 文章分类</h1>
+    <div class="categories-grid">
+        
+        
+        <div class="category-card reveal" style="animation-delay: 0.0s">
+            <h2 class="category-name">
+                <i class="fas fa-folder"></i> Linux
+                <span class="category-count">1 篇</span>
+            </h2>
+            <ul class="category-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="category-card reveal" style="animation-delay: 0.1s">
+            <h2 class="category-name">
+                <i class="fas fa-folder"></i> 数据中心
+                <span class="category-count">2 篇</span>
+            </h2>
+            <ul class="category-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+        <div class="category-card reveal" style="animation-delay: 0.2s">
+            <h2 class="category-name">
+                <i class="fas fa-folder"></i> 网络工程
+                <span class="category-count">3 篇</span>
+            </h2>
+            <ul class="category-posts">
+                
+                <li>
+                    <time></time>
+                    <a href=""></a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</section>
+
+<style>
+.categories-page { max-width: 900px; margin: 0 auto; }
+.categories-grid { display: flex; flex-direction: column; gap: 24px; }
+.category-card {
+    background: var(--bg-card); border-radius: var(--radius); padding: 28px;
+    border: 1px solid var(--glass-border); backdrop-filter: blur(16px);
+    transition: var(--transition);
+}
+.category-card:hover { border-color: rgba(59,130,246,0.15); box-shadow: var(--shadow-card); }
+.category-name {
+    font-size: 1.3rem; font-weight: 700; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+}
+.category-name i { color: var(--accent-cyan); }
+.category-count {
+    font-size: 0.78rem; color: var(--text-muted); margin-left: auto;
+    background: rgba(59,130,246,0.1); padding: 4px 12px; border-radius: 20px;
+}
+.category-posts { list-style: none; padding: 0; }
+.category-posts li {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: var(--transition-fast);
+}
+.category-posts li:last-child { border-bottom: none; }
+.category-posts li:hover { padding-left: 8px; }
+.category-posts time {
+    color: var(--text-muted); font-size: 0.82rem;
+    font-family: var(--font-mono); min-width: 100px;
+}
+.category-posts a {
+    color: var(--text-secondary); font-weight: 500;
+    text-decoration: none !important; transition: var(--transition-fast);
+}
+.category-posts a:hover { color: var(--accent-blue); }
+@media (max-width: 768px) {
+    .category-posts li { flex-direction: column; align-items: flex-start; gap: 4px; }
+}
+</style>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>

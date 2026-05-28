@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <meta name="author" content="{{ site.author }}">
+    <title></title>
+    <meta name="description" content="网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维">
+    <meta name="author" content="ChenChuLin">
     <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,10 +474,10 @@ body {
                 <span class="logo-text">ChenChuLin</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-                <a href="/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-                <a href="/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-                <a href="/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="/" class="nav-link active"><i class="fas fa-home"></i> 首页</a>
+                <a href="/categories/" class="nav-link "><i class="fas fa-folder"></i> 分类</a>
+                <a href="/tags/" class="nav-link "><i class="fas fa-tags"></i> 标签</a>
+                <a href="/about/" class="nav-link "><i class="fas fa-user"></i> 关于</a>
                 <a href="https://github.com/cxy-yao" target="_blank" class="nav-link"><i class="fab fa-github"></i> GitHub</a>
             </div>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -486,15 +486,270 @@ body {
 
     <main class="main-content">
         <div class="container">
-            {{ content }}
+            <!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+        <div class="hero-badge">🧑‍💻 Network Engineer & Tech Writer</div>
+        <h1 class="hero-title">
+            <span class="hero-title-line">ChenChuLin</span>
+            <span class="hero-title-sub">的博客</span>
+        </h1>
+        <div class="hero-typing">
+            <span class="typing-text" id="typingText"></span>
+            <span class="typing-cursor">|</span>
+        </div>
+        <p class="hero-desc">记录数据中心网络、AI算力架构、路由交换与Linux运维的技术笔记</p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-num">6</span>
+                <span class="stat-label">篇文章</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">3</span>
+                <span class="stat-label">个分类</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">22</span>
+                <span class="stat-label">个标签</span>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a href="#posts" class="btn-primary"><i class="fas fa-arrow-down"></i> 浏览文章</a>
+            <a href="/about/" class="btn-secondary"><i class="fas fa-user"></i> 关于我</a>
+        </div>
+    </div>
+</section>
+
+<style>
+/* ─── Hero Section ─── */
+.hero {
+    text-align: center; padding: 60px 0 80px; position: relative;
+    min-height: 55vh; display: flex; align-items: center; justify-content: center;
+}
+.hero-bg-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; height: 600px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.04) 40%, transparent 70%);
+    animation: hero-pulse 6s ease-in-out infinite alternate;
+}
+.hero-content { position: relative; z-index: 1; max-width: 700px; }
+.hero-badge {
+    display: inline-block; padding: 8px 20px; border-radius: 24px;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);
+    color: var(--accent-blue); font-size: 0.85rem; font-weight: 500;
+    margin-bottom: 28px; backdrop-filter: blur(10px);
+    animation: fade-in-up 0.6s ease forwards;
+}
+.hero-title {
+    font-size: 3.8rem; font-weight: 900; line-height: 1.15; margin-bottom: 20px;
+    animation: fade-in-up 0.6s ease 0.1s forwards; opacity: 0;
+}
+.hero-title-line {
+    display: block;
+    background: var(--gradient-main); background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: gradient-shift 6s ease infinite;
+}
+.hero-title-sub {
+    display: block; font-size: 2.5rem; font-weight: 300; color: var(--text-secondary);
+    -webkit-text-fill-color: var(--text-secondary);
+}
+.hero-typing {
+    font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent-cyan);
+    margin-bottom: 20px; height: 1.6em; display: flex; align-items: center; justify-content: center;
+    animation: fade-in-up 0.6s ease 0.2s forwards; opacity: 0;
+}
+.typing-cursor {
+    animation: blink 1s step-end infinite; margin-left: 2px; font-weight: 300;
+    color: var(--accent-cyan);
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.hero-desc {
+    color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8;
+    margin-bottom: 36px; max-width: 520px; margin-left: auto; margin-right: auto;
+    animation: fade-in-up 0.6s ease 0.3s forwards; opacity: 0;
+}
+.hero-stats {
+    display: flex; align-items: center; justify-content: center; gap: 32px;
+    margin-bottom: 40px; animation: fade-in-up 0.6s ease 0.4s forwards; opacity: 0;
+}
+.stat-item { text-align: center; }
+.stat-num {
+    display: block; font-size: 2rem; font-weight: 800;
+    background: var(--gradient-main); background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: gradient-shift 6s ease infinite;
+}
+.stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+.stat-divider { width: 1px; height: 36px; background: var(--glass-border); }
+.hero-actions {
+    display: flex; gap: 14px; justify-content: center;
+    animation: fade-in-up 0.6s ease 0.5s forwards; opacity: 0;
+}
+.btn-primary, .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px;
+    border-radius: var(--radius-sm); font-weight: 600; font-size: 0.95rem;
+    text-decoration: none !important; transition: var(--transition); cursor: pointer;
+}
+.btn-primary {
+    background: var(--gradient-main); color: #fff !important;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.4);
+    color: #fff !important;
+}
+.btn-secondary {
+    background: var(--glass); color: var(--text-secondary) !important;
+    border: 1px solid var(--glass-border);
+}
+.btn-secondary:hover {
+    background: var(--glass-hover); color: var(--text-primary) !important;
+    border-color: rgba(59,130,246,0.2); transform: translateY(-2px);
+}
+@keyframes hero-pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+/* ─── Posts Grid ─── */
+.posts-section { padding-top: 20px; }
+.posts-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px; margin-bottom: 60px;
+}
+
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.4rem; }
+    .hero-title-sub { font-size: 1.5rem; }
+    .hero-stats { gap: 20px; }
+    .stat-num { font-size: 1.6rem; }
+    .hero-actions { flex-direction: column; align-items: center; }
+    .posts-grid { grid-template-columns: 1fr; }
+    .hero { min-height: auto; padding: 40px 0 60px; }
+}
+</style>
+
+<!-- Posts Section -->
+<section class="posts-section" id="posts">
+    <h2 class="section-title"><i class="fas fa-fire"></i> 最新文章</h2>
+    <div class="posts-grid">
+        
+        <article class="post-card reveal" style="animation-delay: 0.0s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-linux">Linux</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/wsl2-network-engineer-toolkit/">WSL2网络工程师效率工具箱</a></h3>
+            <p class="post-card-excerpt">在WSL2环境下搭建一套网络工程师的效率工具链——从SSH管理到自动化脚本，从网络抓包到文档写作，全流程覆盖。 基础环境配置 WSL2网络注意事项...</p>
+            <div class="post-card-tags"><span class="tag-pill">#WSL2</span><span class="tag-pill">#效率工具</span><span class="tag-pill">#Python</span><span class="tag-pill">#网络自动化</span></div>
+            <a href="/2026/05/28/wsl2-network-engineer-toolkit/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        <article class="post-card reveal" style="animation-delay: 0.08s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-datacenter">数据中心</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/vxlan-evpn-datacenter/">VXLAN EVPN数据中心网络实战：从原理到配置</a></h3>
+            <p class="post-card-excerpt">VXLAN EVPN已成为数据中心网络的事实标准。本文从控制面到数据面，用真实配置讲清楚VXLAN EVPN的核心机制。 为什么是VXLAN EVPN？ 传统数据中心网络的痛点： VLAN数量限制：4096个VLAN不够用 STP收敛慢：链...</p>
+            <div class="post-card-tags"><span class="tag-pill">#VXLAN</span><span class="tag-pill">#EVPN</span><span class="tag-pill">#数据中心</span><span class="tag-pill">#华为CE</span></div>
+            <a href="/2026/05/28/vxlan-evpn-datacenter/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        <article class="post-card reveal" style="animation-delay: 0.16s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-network">网络工程</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/network-troubleshooting-guide/">网络故障排查结构化方法论</a></h3>
+            <p class="post-card-excerpt">网络故障不可怕，可怕的是没有章法。本文介绍一套四步结构化排障流程，配合常见故障的根因链，帮你快速定位问题。 四步排障法...</p>
+            <div class="post-card-tags"><span class="tag-pill">#故障排查</span><span class="tag-pill">#运维方法论</span><span class="tag-pill">#网络排障</span></div>
+            <a href="/2026/05/28/network-troubleshooting-guide/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        <article class="post-card reveal" style="animation-delay: 0.24s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-network">网络工程</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/huawei-ce-command-reference/">华为CloudEngine交换机运维命令速查手册</a></h3>
+            <p class="post-card-excerpt">日常运维中最常用的华为CE系列交换机命令，按场景分类整理，直接复制可用。 设备基础信息...</p>
+            <div class="post-card-tags"><span class="tag-pill">#华为</span><span class="tag-pill">#CE交换机</span><span class="tag-pill">#运维</span><span class="tag-pill">#命令速查</span></div>
+            <a href="/2026/05/28/huawei-ce-command-reference/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        <article class="post-card reveal" style="animation-delay: 0.32s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-network">网络工程</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/bgp-route-selection/">BGP路由选择算法13步详解与实战调优</a></h3>
+            <p class="post-card-excerpt">BGP选路不是只看MED，13步算法每一步都可能影响流量走向。本文逐条拆解，配合实际配置说明如何精确控制路径。 BGP选路概述 当BGP收到多条去往同一目的前缀的路由时，按以下13步顺序逐条比较，一旦某步能分出胜负，立即选择，不再继续： 第...</p>
+            <div class="post-card-tags"><span class="tag-pill">#BGP</span><span class="tag-pill">#路由协议</span><span class="tag-pill">#DC网络</span><span class="tag-pill">#华为</span></div>
+            <a href="/2026/05/28/bgp-route-selection/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        <article class="post-card reveal" style="animation-delay: 0.4s">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> 2026-05-28</time>
+                <span class="post-card-category cat-datacenter">数据中心</span>
+            </div>
+            <h3 class="post-card-title"><a href="/2026/05/28/ai-computing-network-design/">AI算力网络架构设计：Spine-Leaf组网要点</a></h3>
+            <p class="post-card-excerpt">AI训练集群对网络的要求与传统数据中心截然不同——低延迟、零丢包、大带宽是硬指标。本文总结AI算力网络Spine-Leaf架构的设计要点。 AI训练网络的特殊需求 指标 传统DC AI训练集群 东西向带宽 10-25Gbps/服务器 100...</p>
+            <div class="post-card-tags"><span class="tag-pill">#AI算力</span><span class="tag-pill">#Spine-Leaf</span><span class="tag-pill">#网络架构</span><span class="tag-pill">#RoCEv2</span></div>
+            <a href="/2026/05/28/ai-computing-network-design/" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+            </div>
+            
+            <a href="" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        
+    </div>
+</section>
+
+<script>
+/* ─── Typing Effect ─── */
+(function() {
+    const texts = [
+        'Spine-Leaf架构设计 🌐',
+        'VXLAN EVPN实战配置 ⚡',
+        'BGP/OSPF协议深度解析 📡',
+        'AI算力网络组网 🤖',
+        '华为CE交换机运维 🔧',
+        '网络故障排查方法论 🛠️',
+        'WSL2效率工具箱 🐧',
+        'Python网络自动化 🐍'
+    ];
+    const el = document.getElementById('typingText');
+    let textIdx = 0, charIdx = 0, isDeleting = false, delay = 100;
+
+    function type() {
+        const current = texts[textIdx];
+        if (isDeleting) {
+            el.textContent = current.substring(0, charIdx - 1);
+            charIdx--; delay = 40;
+        } else {
+            el.textContent = current.substring(0, charIdx + 1);
+            charIdx++; delay = 80 + Math.random() * 60;
+        }
+        if (!isDeleting && charIdx === current.length) {
+            delay = 2500; isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false; textIdx = (textIdx + 1) % texts.length; delay = 400;
+        }
+        setTimeout(type, delay);
+    }
+    setTimeout(type, 800);
+})();
+</script>
+
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>© {{ site.time | date: "%Y" }} <strong>{{ site.author }}</strong>. All rights reserved.</p>
-                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by {{ site.author }} · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+                <p>© 2026 <strong>ChenChuLin</strong>. All rights reserved.</p>
+                <p><i class="fas fa-code"></i> with <span class="heart">♥</span> by ChenChuLin · Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>
