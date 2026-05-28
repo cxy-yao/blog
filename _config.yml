@@ -1,5 +1,5 @@
 title: ChenChuLin的博客
-description: A network engineer, recording technology and life
+description: 网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维
 author: ChenChuLin
 lang: zh-CN
 
@@ -10,7 +10,16 @@ github_url: https://github.com/cxy-yao
 # 构建设置
 markdown: kramdown
 permalink: /:year/:month/:day/:title/
+excerpt_separator: <!--more-->
 
 # 导航菜单
 header_pages:
   - about.md
+  - categories.md
+  - tags.md
+
+# 分页
+plugins:
+  - jekyll-paginate
+paginate: 10
+paginate_path: "/page:num/"
