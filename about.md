@@ -113,7 +113,7 @@ permalink: /about/
     <section class="about-section reveal">
         <h2><i class="fas fa-paper-plane"></i> 联系方式</h2>
         <div class="contact-links">
-            <a href="https://github.com/cxy-yao" target="_blank" class="contact-btn"><i class="fab fa-github"></i> GitHub</a>
+            <a href="#" class="contact-btn"><i class="fab fa-github"></i> GitHub</a>
         </div>
     </section>
 </div>
