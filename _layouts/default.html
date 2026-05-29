@@ -6,7 +6,16 @@
     <title>{{ page.title | default: site.title }}</title>
     <meta name="description" content="{{ page.description | default: site.description }}">
     <meta name="author" content="{{ site.author }}">
+
     <meta name="theme-color" content="#0f172a">
+    <script>
+    (function() {
+        var host = window.location.hostname;
+        if (host !== 'chulinchen.top' && host !== 'www.chulinchen.top') {
+            window.location.replace('https://chulinchen.top' + window.location.pathname + window.location.search + window.location.hash);
+        }
+    })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Pacifico&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
