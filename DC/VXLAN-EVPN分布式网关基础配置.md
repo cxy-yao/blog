@@ -65,3 +65,5 @@ display mac-address bridge-domain 10
 - Anycast Gateway 的 MAC 地址在所有 Leaf 上必须一致
 - `arp collect host-information` 用于 EVPN ARP 代理
 - IRB 接口的 IP 地址在各 Leaf 上也必须一致（Anycast 模式）
+
+> 更新于 2026-05-30，验证通过
