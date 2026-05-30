@@ -18,53 +18,41 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Get changed DC files
-        id: changed
+      - name: Sync DC to _posts
         run: |
           git fetch origin obsidian-dc
-          CHANGED=$(git diff --name-only --diff-filter=ACMR -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
-          DELETED=$(git diff --name-only --diff-filter=D -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
-          echo "changed<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "deleted<<EOF" >> $GITHUB_OUTPUT
-          echo "$DELETED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Sync to _posts
-        run: |
           mkdir -p _posts
 
+          # 1. 获取 obsidian-dc 分支上当前所有 DC 文件
+          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | grep '\.md$' || true)
+
+          # 2. 记录当前 _posts 中已同步的文件（带 dc-sync 标记）
+          SYNCED_POSTS=$(grep -rl 'dc-sync: true' _posts/ 2>/dev/null || true)
+
+          # 3. 同步 DC 文件到 _posts
+          SYNCED_NOW=""
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            [[ "$file" != *.md ]] && continue
-
-            echo "Processing: $file"
 
             git checkout origin/obsidian-dc -- "$file"
-            if [ ! -f "$file" ]; then
-              echo "Failed to checkout: $file"
-              continue
-            fi
+            [ ! -f "$file" ] && continue
 
             CONTENT=$(cat "$file")
             BASENAME=$(basename "$file" .md)
 
+            # 提取 frontmatter 字段
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
-            if [ -z "$DATE" ]; then
-              DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
-              [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
-            fi
+            [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
 
             TITLE=$(echo "$CONTENT" | grep -m1 '^title:' | sed 's/^title:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$TITLE" ] && TITLE="$BASENAME"
 
-            # Generate slug: keep alphanumeric and Chinese, replace others with hyphens
+            # 生成文件名
             SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-50)
             [ -z "$SLUG" ] && SLUG="post"
-
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
+            # 写入文件，添加 dc-sync 标记
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
               cat > "$POST_FILE" << EOF
           ---
@@ -73,29 +61,35 @@ jobs:
           date: $DATE
           categories: []
           tags: []
+          dc-sync: true
+          dc-source: "$file"
           ---
 
           EOF
               echo "$CONTENT" >> "$POST_FILE"
             else
               echo "$CONTENT" > "$POST_FILE"
+              # 确保有 layout 和 dc-sync 标记
               grep -q '^layout:' "$POST_FILE" || sed -i '1a layout: post' "$POST_FILE"
-              grep -q '^date:' "$POST_FILE" || sed -i "/^---$/a date: $DATE" "$POST_FILE"
+              grep -q '^dc-sync:' "$POST_FILE" || sed -i "/^---$/a dc-sync: true" "$POST_FILE"
+              grep -q '^dc-source:' "$POST_FILE" || sed -i "/^---$/a dc-source: $file" "$POST_FILE"
             fi
 
+            SYNCED_NOW="$SYNCED_NOW|$POST_FILE"
             echo "Synced: $file -> $POST_FILE"
 
             rm -f "$file"
             rmdir -p "$(dirname "$file")" 2>/dev/null || true
 
-          done <<< "${{ steps.changed.outputs.changed }}"
+          done <<< "$DC_FILES"
 
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            [[ "$file" != *.md ]] && continue
-            BASENAME=$(basename "$file" .md)
-            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "Deleted: $BASENAME"
-          done <<< "${{ steps.changed.outputs.deleted }}"
+          # 4. 删除已不存在于 DC 的笔记
+          for post in $SYNCED_POSTS; do
+            # 检查这个 post 是否在本次同步中
+            if ! echo "$SYNCED_NOW" | grep -q "|$post"; then
+              rm -f "$post" && echo "Deleted: $post"
+            fi
+          done
 
       - name: Commit and push
         run: |
@@ -103,8 +97,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add _posts/
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes"
           else
-            git commit -m "sync: DC notes to blog $(date +%Y-%m-%d)"
+            git commit -m "sync: DC notes $(date +%Y-%m-%d)"
             git push
           fi
