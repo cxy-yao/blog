@@ -1,12 +1,24 @@
-# Obsidian 系统文件（不跟踪工作区状态）
+# Obsidian 系统文件
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 .obsidian/graph.json
 .obsidian/starred.json
-.obsidian/plugins/obsidian-excalidraw-plugin/
 
-# 只忽略 Network Vault 中非 DC 的顶层目录
+# 忽略非 DC 的顶层目录
 /Notion导入/
+
+# 博客文件（来自主分支，不需要在 Obsidian 中显示）
+/_layouts/
+/_config.yml
+/_posts/
+/assets/
+/about.md
+/categories.md
+/tags.md
+/index.md
+/README.md
+/build_preview.py
+/__pycache__/
 
 # DC 内排除临时文件
 DC/**/*.tmp
