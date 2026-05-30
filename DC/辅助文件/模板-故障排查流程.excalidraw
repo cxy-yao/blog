@@ -26,8 +26,14 @@
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_start", "type": "text" },
-        { "id": "a1", "type": "arrow" }
+        {
+          "id": "t_start",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -54,14 +60,25 @@
       "y": 180,
       "width": 200,
       "height": 60,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#a5d8ff",
       "fillStyle": "solid",
       "strokeColor": "#1971c2",
       "boundElements": [
-        { "id": "t_step1", "type": "text" },
-        { "id": "a1", "type": "arrow" },
-        { "id": "a2", "type": "arrow" }
+        {
+          "id": "t_step1",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -92,10 +109,22 @@
       "fillStyle": "solid",
       "strokeColor": "#e8590c",
       "boundElements": [
-        { "id": "t_check1", "type": "text" },
-        { "id": "a2", "type": "arrow" },
-        { "id": "a3", "type": "arrow" },
-        { "id": "a4", "type": "arrow" }
+        {
+          "id": "t_check1",
+          "type": "text"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -122,14 +151,25 @@
       "y": 460,
       "width": 180,
       "height": 60,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_step2", "type": "text" },
-        { "id": "a3", "type": "arrow" },
-        { "id": "a5", "type": "arrow" }
+        {
+          "id": "t_step2",
+          "type": "text"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a5",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -156,14 +196,25 @@
       "y": 460,
       "width": 180,
       "height": 60,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#ffc9c9",
       "fillStyle": "solid",
       "strokeColor": "#c92a2a",
       "boundElements": [
-        { "id": "t_step3", "type": "text" },
-        { "id": "a4", "type": "arrow" },
-        { "id": "a6", "type": "arrow" }
+        {
+          "id": "t_step3",
+          "type": "text"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        },
+        {
+          "id": "a6",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -190,12 +241,33 @@
       "y": 130,
       "width": 10,
       "height": 50,
-      "points": [[0, 0], [10, 50]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          50
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1e1e1e",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "start", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "step1", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "start",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "step1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -204,12 +276,33 @@
       "y": 240,
       "width": 10,
       "height": 60,
-      "points": [[0, 0], [10, 60]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          60
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1e1e1e",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "step1", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "check1", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "step1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "check1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -218,12 +311,33 @@
       "y": 380,
       "width": 200,
       "height": 80,
-      "points": [[0, 0], [-170, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -170,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#2f9e44",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "check1", "fixedPoint": [0, 1] },
-      "endBinding": { "elementId": "step2", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "check1",
+        "fixedPoint": [
+          0,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "step2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "text",
@@ -244,12 +358,33 @@
       "y": 380,
       "width": 200,
       "height": 80,
-      "points": [[0, 0], [190, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          190,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#c92a2a",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "check1", "fixedPoint": [1, 1] },
-      "endBinding": { "elementId": "step3", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "check1",
+        "fixedPoint": [
+          1,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "step3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "text",
@@ -277,6 +412,7 @@
     }
   ],
   "appState": {
-    "viewBackgroundColor": "#ffffff"
+    "viewBackgroundColor": "#ffffff",
+    "theme": "light"
   }
 }

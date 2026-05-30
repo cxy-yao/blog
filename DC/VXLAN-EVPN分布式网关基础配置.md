@@ -13,7 +13,7 @@ excerpt: "VXLAN EVPN分布式网关是数据中心Fabric的核心组件，本文
 
 ## 拓扑图
 
-![[VXLAN-EVPN拓扑图.svg]]
+![[辅助文件/AI算力网络拓扑示例.excalidraw|800]]
 
 ## 核心组件
 
@@ -28,45 +28,35 @@ excerpt: "VXLAN EVPN分布式网关是数据中心Fabric的核心组件，本文
 ### 1. 配置 NVE 接口
 
 ```shell
+# 华为 CE 交换机 NVE 接口配置
 interface Nve1
- source 10.1.10.1
+ source 10.1.1.1
  vni 10010 head-end peer-list protocol bgp
 ```
 
-### 2. 配置 BD（Bridge Domain）
+### 2. 配置 EVPN 实例
 
 ```shell
-bridge-domain 10
- vxlan vni 10010
-#
 evpn vpn-instance evpn1 bd-mode
- route-distinguisher 10.1.10.1:10
- vpn-target 65000:10 export-extcommunity
- vpn-target 65000:10 import-extcommunity
+ route-distinguisher 10.1.1.1:10010
+ vpn-target 10010:10010 export-extcommunity
+ vpn-target 10010:10010 import-extcommunity
 ```
 
-### 3. 配置分布式网关（IRB 接口）
+### 3. 配置 BD（Bridge Domain）
 
 ```shell
-interface Vbdif10
- ip binding vpn-instance tenant1
- ip address 192.168.10.1 255.255.255.0
- arp collect host-information
- mac-address 0000-5e00-0101
+bridge-domain 10010
+ vxlan vni 10010
+ evpn binding vpn-instance evpn1
 ```
 
 ## 验证命令
 
 ```shell
 display vxlan tunnel all
-display evpn vpn-instance verbose
-display arp vbdif 10
-display mac-address bridge-domain 10
+display evpn vpn-instance all
+display bgp evpn all
+display mac-address
 ```
-
-## 注意事项
-
-- Anycast Gateway 的 MAC 地址在所有 Leaf 上必须一致
-- `arp collect host-information` 用于 EVPN ARP 代理
-- IRB 接口的 IP 地址在各 Leaf 上也必须一致（Anycast 模式）
 <!-- 更新于 2026-05-30 -->

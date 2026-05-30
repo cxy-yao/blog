@@ -22,16 +22,33 @@
       "y": 100,
       "width": 160,
       "height": 60,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#a5d8ff",
       "fillStyle": "solid",
       "strokeColor": "#1971c2",
       "boundElements": [
-        { "id": "t_spine1", "type": "text" },
-        { "id": "a1", "type": "arrow" },
-        { "id": "a2", "type": "arrow" },
-        { "id": "a3", "type": "arrow" },
-        { "id": "a4", "type": "arrow" }
+        {
+          "id": "t_spine1",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -58,16 +75,33 @@
       "y": 100,
       "width": 160,
       "height": 60,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#a5d8ff",
       "fillStyle": "solid",
       "strokeColor": "#1971c2",
       "boundElements": [
-        { "id": "t_spine2", "type": "text" },
-        { "id": "a5", "type": "arrow" },
-        { "id": "a6", "type": "arrow" },
-        { "id": "a7", "type": "arrow" },
-        { "id": "a8", "type": "arrow" }
+        {
+          "id": "t_spine2",
+          "type": "text"
+        },
+        {
+          "id": "a5",
+          "type": "arrow"
+        },
+        {
+          "id": "a6",
+          "type": "arrow"
+        },
+        {
+          "id": "a7",
+          "type": "arrow"
+        },
+        {
+          "id": "a8",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -94,16 +128,33 @@
       "y": 250,
       "width": 140,
       "height": 50,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_leaf1", "type": "text" },
-        { "id": "a1", "type": "arrow" },
-        { "id": "a5", "type": "arrow" },
-        { "id": "a9", "type": "arrow" },
-        { "id": "a10", "type": "arrow" }
+        {
+          "id": "t_leaf1",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        },
+        {
+          "id": "a5",
+          "type": "arrow"
+        },
+        {
+          "id": "a9",
+          "type": "arrow"
+        },
+        {
+          "id": "a10",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -130,16 +181,33 @@
       "y": 250,
       "width": 140,
       "height": 50,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_leaf2", "type": "text" },
-        { "id": "a2", "type": "arrow" },
-        { "id": "a6", "type": "arrow" },
-        { "id": "a11", "type": "arrow" },
-        { "id": "a12", "type": "arrow" }
+        {
+          "id": "t_leaf2",
+          "type": "text"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        },
+        {
+          "id": "a6",
+          "type": "arrow"
+        },
+        {
+          "id": "a11",
+          "type": "arrow"
+        },
+        {
+          "id": "a12",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -166,16 +234,33 @@
       "y": 250,
       "width": 140,
       "height": 50,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_leaf3", "type": "text" },
-        { "id": "a3", "type": "arrow" },
-        { "id": "a7", "type": "arrow" },
-        { "id": "a13", "type": "arrow" },
-        { "id": "a14", "type": "arrow" }
+        {
+          "id": "t_leaf3",
+          "type": "text"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a7",
+          "type": "arrow"
+        },
+        {
+          "id": "a13",
+          "type": "arrow"
+        },
+        {
+          "id": "a14",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -202,16 +287,33 @@
       "y": 250,
       "width": 140,
       "height": 50,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeColor": "#2f9e44",
       "boundElements": [
-        { "id": "t_leaf4", "type": "text" },
-        { "id": "a4", "type": "arrow" },
-        { "id": "a8", "type": "arrow" },
-        { "id": "a15", "type": "arrow" },
-        { "id": "a16", "type": "arrow" }
+        {
+          "id": "t_leaf4",
+          "type": "text"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        },
+        {
+          "id": "a8",
+          "type": "arrow"
+        },
+        {
+          "id": "a15",
+          "type": "arrow"
+        },
+        {
+          "id": "a16",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -238,12 +340,33 @@
       "y": 160,
       "width": 100,
       "height": 90,
-      "points": [[0, 0], [-110, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -110,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine1", "fixedPoint": [0.25, 1] },
-      "endBinding": { "elementId": "leaf1", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.25,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -252,12 +375,33 @@
       "y": 160,
       "width": 40,
       "height": 90,
-      "points": [[0, 0], [40, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine1", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "leaf2", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -266,12 +410,33 @@
       "y": 160,
       "width": 200,
       "height": 90,
-      "points": [[0, 0], [190, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          190,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine1", "fixedPoint": [0.75, 1] },
-      "endBinding": { "elementId": "leaf3", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.75,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -280,12 +445,33 @@
       "y": 160,
       "width": 340,
       "height": 90,
-      "points": [[0, 0], [340, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          340,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine1", "fixedPoint": [1, 1] },
-      "endBinding": { "elementId": "leaf4", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          1,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -294,12 +480,33 @@
       "y": 160,
       "width": 340,
       "height": 90,
-      "points": [[0, 0], [-340, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -340,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine2", "fixedPoint": [0, 1] },
-      "endBinding": { "elementId": "leaf1", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -308,12 +515,33 @@
       "y": 160,
       "width": 200,
       "height": 90,
-      "points": [[0, 0], [-190, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -190,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine2", "fixedPoint": [0.25, 1] },
-      "endBinding": { "elementId": "leaf2", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.25,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -322,12 +550,33 @@
       "y": 160,
       "width": 40,
       "height": 90,
-      "points": [[0, 0], [-40, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -40,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine2", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "leaf3", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -336,12 +585,33 @@
       "y": 160,
       "width": 100,
       "height": 90,
-      "points": [[0, 0], [110, 90]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          110,
+          90
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#1971c2",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "spine2", "fixedPoint": [0.75, 1] },
-      "endBinding": { "elementId": "leaf4", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.75,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "rectangle",
@@ -354,8 +624,14 @@
       "fillStyle": "solid",
       "strokeColor": "#495057",
       "boundElements": [
-        { "id": "t_srv1", "type": "text" },
-        { "id": "a9", "type": "arrow" }
+        {
+          "id": "t_srv1",
+          "type": "text"
+        },
+        {
+          "id": "a9",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -386,8 +662,14 @@
       "fillStyle": "solid",
       "strokeColor": "#495057",
       "boundElements": [
-        { "id": "t_srv2", "type": "text" },
-        { "id": "a11", "type": "arrow" }
+        {
+          "id": "t_srv2",
+          "type": "text"
+        },
+        {
+          "id": "a11",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -418,8 +700,14 @@
       "fillStyle": "solid",
       "strokeColor": "#495057",
       "boundElements": [
-        { "id": "t_srv3", "type": "text" },
-        { "id": "a13", "type": "arrow" }
+        {
+          "id": "t_srv3",
+          "type": "text"
+        },
+        {
+          "id": "a13",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -450,8 +738,14 @@
       "fillStyle": "solid",
       "strokeColor": "#495057",
       "boundElements": [
-        { "id": "t_srv4", "type": "text" },
-        { "id": "a15", "type": "arrow" }
+        {
+          "id": "t_srv4",
+          "type": "text"
+        },
+        {
+          "id": "a15",
+          "type": "arrow"
+        }
       ]
     },
     {
@@ -478,12 +772,33 @@
       "y": 300,
       "width": 10,
       "height": 80,
-      "points": [[0, 0], [10, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#2f9e44",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "leaf1", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "srv1", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -492,12 +807,33 @@
       "y": 300,
       "width": 10,
       "height": 80,
-      "points": [[0, 0], [10, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#2f9e44",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "leaf2", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "srv2", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -506,12 +842,33 @@
       "y": 300,
       "width": 10,
       "height": 80,
-      "points": [[0, 0], [10, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#2f9e44",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "leaf3", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "srv3", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "arrow",
@@ -520,12 +877,33 @@
       "y": 300,
       "width": 10,
       "height": 80,
-      "points": [[0, 0], [10, 80]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
       "endArrowhead": "arrow",
       "strokeColor": "#2f9e44",
       "strokeWidth": 2,
-      "startBinding": { "elementId": "leaf4", "fixedPoint": [0.5, 1] },
-      "endBinding": { "elementId": "srv4", "fixedPoint": [0.5, 0] }
+      "startBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
     },
     {
       "type": "text",
@@ -541,6 +919,7 @@
     }
   ],
   "appState": {
-    "viewBackgroundColor": "#ffffff"
+    "viewBackgroundColor": "#ffffff",
+    "theme": "light"
   }
 }
