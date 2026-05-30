@@ -25,7 +25,7 @@ jobs:
           mkdir -p _posts
 
           # 1. 获取 obsidian-dc 分支上当前所有 DC 文件（排除 .辅助文件）
-          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | sed 's/^"//;s/"$//' | grep '\\.md$' | grep -v '\\.辅助文件/' || true)
+          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | sed 's/^"//;s/"\$//' | grep '\.md\$' | grep -v '\.辅助文件/' || true)
 
           # 2. 记录当前 _posts 中已同步的文件
           SYNCED_POSTS=$(grep -rl 'dc-sync: true' _posts/ 2>/dev/null || true)
