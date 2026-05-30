@@ -22,8 +22,9 @@ jobs:
         id: changed
         run: |
           git fetch origin obsidian-dc
-          CHANGED=$(git diff --name-only --diff-filter=ACMR origin/main origin/obsidian-dc -- DC/ || true)
-          DELETED=$(git diff --name-only --diff-filter=D origin/main origin/obsidian-dc -- DC/ || true)
+          # 使用 -z 处理中文文件名
+          CHANGED=$(git diff --name-only --diff-filter=ACMR -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
+          DELETED=$(git diff --name-only --diff-filter=D -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
           echo "changed<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGED" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -40,8 +41,16 @@ jobs:
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
 
-            # 从 obsidian-dc 分支获取文件内容
-            CONTENT=$(git show origin/obsidian-dc:"$file" 2>/dev/null) || continue
+            echo "Processing: $file"
+
+            # 用 checkout 方式获取文件（避免中文编码问题）
+            git checkout origin/obsidian-dc -- "$file"
+            if [ ! -f "$file" ]; then
+              echo "❌ Failed to checkout: $file"
+              continue
+            fi
+
+            CONTENT=$(cat "$file")
 
             # 提取文件名（不含路径和扩展名）
             BASENAME=$(basename "$file" .md)
@@ -90,6 +99,10 @@ jobs:
             fi
 
             echo "✅ Synced: $file -> $POST_FILE"
+
+            # 清理 checkout 的源文件
+            rm -f "$file"
+            rmdir -p "$(dirname "$file")" 2>/dev/null || true
 
           done <<< "${{ steps.changed.outputs.changed }}"
 
