@@ -5,6 +5,7 @@ on:
     branches: [obsidian-dc]
     paths:
       - 'DC/**'
+      - '!DC/.辅助文件/**'
 
 jobs:
   sync-posts:
@@ -23,10 +24,10 @@ jobs:
           git fetch origin obsidian-dc
           mkdir -p _posts
 
-          # 1. 获取 obsidian-dc 分支上当前所有 DC 文件
-          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | grep '\.md$' || true)
+          # 1. 获取 obsidian-dc 分支上当前所有 DC 文件（排除 .辅助文件）
+          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | grep '\.md$' | grep -v '\.辅助文件/' || true)
 
-          # 2. 记录当前 _posts 中已同步的文件（带 dc-sync 标记）
+          # 2. 记录当前 _posts 中已同步的文件
           SYNCED_POSTS=$(grep -rl 'dc-sync: true' _posts/ 2>/dev/null || true)
 
           # 3. 同步 DC 文件到 _posts
@@ -40,19 +41,16 @@ jobs:
             CONTENT=$(cat "$file")
             BASENAME=$(basename "$file" .md)
 
-            # 提取 frontmatter 字段
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
 
             TITLE=$(echo "$CONTENT" | grep -m1 '^title:' | sed 's/^title:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$TITLE" ] && TITLE="$BASENAME"
 
-            # 生成文件名
             SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-50)
             [ -z "$SLUG" ] && SLUG="post"
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
-            # 写入文件，添加 dc-sync 标记
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
               cat > "$POST_FILE" << EOF
           ---
@@ -69,7 +67,6 @@ jobs:
               echo "$CONTENT" >> "$POST_FILE"
             else
               echo "$CONTENT" > "$POST_FILE"
-              # 确保有 layout 和 dc-sync 标记
               grep -q '^layout:' "$POST_FILE" || sed -i '1a layout: post' "$POST_FILE"
               grep -q '^dc-sync:' "$POST_FILE" || sed -i "/^---$/a dc-sync: true" "$POST_FILE"
               grep -q '^dc-source:' "$POST_FILE" || sed -i "/^---$/a dc-source: $file" "$POST_FILE"
@@ -85,7 +82,6 @@ jobs:
 
           # 4. 删除已不存在于 DC 的笔记
           for post in $SYNCED_POSTS; do
-            # 检查这个 post 是否在本次同步中
             if ! echo "$SYNCED_NOW" | grep -q "|$post"; then
               rm -f "$post" && echo "Deleted: $post"
             fi
