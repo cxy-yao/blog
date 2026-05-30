@@ -26,10 +26,8 @@ jobs:
 
           # 获取 DC 文件列表，解码转义的 Unicode 字符
           DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | while read -r line; do
-            # 去掉引号
             line="${line#\"}"
             line="${line%\"}"
-            # 解码八进制转义序列
             printf '%b\n' "$line"
           done | grep '\.md$' | grep -v '/\.' || true)
 
@@ -50,36 +48,48 @@ jobs:
             CONTENT=$(cat "$file")
             BASENAME=$(basename "$file" .md)
 
+            # 提取 frontmatter 字段
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
 
             TITLE=$(echo "$CONTENT" | grep -m1 '^title:' | sed 's/^title:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$TITLE" ] && TITLE="$BASENAME"
 
+            CATEGORIES=$(echo "$CONTENT" | grep -m1 '^categories:' | sed 's/^categories:\s*//')
+            [ -z "$CATEGORIES" ] && CATEGORIES="[]"
+
+            TAGS=$(echo "$CONTENT" | grep -m1 '^tags:' | sed 's/^tags:\s*//')
+            [ -z "$TAGS" ] && TAGS="[]"
+
+            EXCERPT=$(echo "$CONTENT" | grep -m1 '^excerpt:' | sed 's/^excerpt:\s*//' | tr -d '"' | tr -d "'")
+            [ -z "$EXCERPT" ] && EXCERPT=""
+
+            # 提取正文（去掉 frontmatter）
+            BODY=$(echo "$CONTENT" | sed '1,/^---$/d' | sed '1,/^---$/d')
+
+            # 删除 Obsidian 专属语法：Excalidraw 嵌入
+            BODY=$(echo "$BODY" | sed '/!\[\[.*\.excalidraw.*\]\]/d')
+
+            # 生成文件名
             SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-50)
             [ -z "$SLUG" ] && SLUG="post"
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
-            if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
-              cat > "$POST_FILE" << EOF
+            # 始终重新构建 frontmatter
+            cat > "$POST_FILE" << EOF
           ---
           layout: post
           title: "$TITLE"
           date: $DATE
-          categories: []
-          tags: []
+          categories: $CATEGORIES
+          tags: $TAGS
+          excerpt: "$EXCERPT"
           dc-sync: true
           dc-source: "$file"
           ---
 
           EOF
-              echo "$CONTENT" >> "$POST_FILE"
-            else
-              echo "$CONTENT" > "$POST_FILE"
-              grep -q '^layout:' "$POST_FILE" || sed -i '1a layout: post' "$POST_FILE"
-              grep -q '^dc-sync:' "$POST_FILE" || sed -i "/^---$/a dc-sync: true" "$POST_FILE"
-              grep -q '^dc-source:' "$POST_FILE" || sed -i "/^---$/a dc-source: $file" "$POST_FILE"
-            fi
+            echo "$BODY" >> "$POST_FILE"
 
             SYNCED_NOW="$SYNCED_NOW|$POST_FILE"
             echo "Synced: $file -> $POST_FILE"
