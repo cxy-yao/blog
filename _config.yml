@@ -21,6 +21,11 @@ header_pages:
   - tags.md
 
 # 分页
+exclude:
+  - DC/
+  - .github/
+  - .obsidian/
+  - Notion导入/
 plugins:
   - jekyll-paginate
 paginate: 10
