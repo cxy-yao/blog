@@ -1,6 +1,12 @@
-_site/
-build_preview.py
-Gemfile.lock
-.jekyll-cache
-.jekyll-metadata
-.sass-cache
+# Obsidian 系统文件
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
+.obsidian/starred.json
+
+# 只忽略 Network Vault 中非 DC 的顶层目录
+/Notion导入/
+
+# DC 内排除临时文件
+DC/**/*.tmp
+DC/**/.DS_Store
