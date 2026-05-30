@@ -24,16 +24,22 @@ jobs:
           git fetch origin obsidian-dc
           mkdir -p _posts
 
-          # 1. 获取 obsidian-dc 分支上当前所有 DC .md 文件（排除隐藏目录）
-          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | sed 's/^"//;s/"$//' | grep '\.md$' | grep -v '/\.' || true)
+          # 获取 DC 文件列表，解码转义的 Unicode 字符
+          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | while read -r line; do
+            # 去掉引号
+            line="${line#\"}"
+            line="${line%\"}"
+            # 解码八进制转义序列
+            printf '%b\n' "$line"
+          done | grep '\.md$' | grep -v '/\.' || true)
 
           echo "Found DC files:"
           echo "$DC_FILES"
 
-          # 2. 记录当前 _posts 中已同步的文件
+          # 记录当前 _posts 中已同步的文件
           SYNCED_POSTS=$(grep -rl 'dc-sync: true' _posts/ 2>/dev/null || true)
 
-          # 3. 同步 DC 文件到 _posts
+          # 同步 DC 文件到 _posts
           SYNCED_NOW=""
           while IFS= read -r file; do
             [ -z "$file" ] && continue
@@ -83,7 +89,7 @@ jobs:
 
           done <<< "$DC_FILES"
 
-          # 4. 删除已不存在于 DC 的笔记
+          # 删除已不存在于 DC 的笔记
           for post in $SYNCED_POSTS; do
             if ! echo "$SYNCED_NOW" | grep -q "|$post"; then
               rm -f "$post" && echo "Deleted: $post"
