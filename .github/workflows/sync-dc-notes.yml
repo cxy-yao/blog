@@ -1,0 +1,116 @@
+name: Sync DC Notes to Blog
+
+on:
+  push:
+    branches: [obsidian-dc]
+    paths:
+      - 'DC/**'
+
+jobs:
+  sync-posts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get changed DC files
+        id: changed
+        run: |
+          git fetch origin obsidian-dc
+          CHANGED=$(git diff --name-only --diff-filter=ACMR origin/main origin/obsidian-dc -- DC/ || true)
+          DELETED=$(git diff --name-only --diff-filter=D origin/main origin/obsidian-dc -- DC/ || true)
+          echo "changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "deleted<<EOF" >> $GITHUB_OUTPUT
+          echo "$DELETED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync to _posts
+        run: |
+          mkdir -p _posts
+
+          # 处理新增/修改的文件
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" != *.md ]] && continue
+
+            # 从 obsidian-dc 分支获取文件内容
+            CONTENT=$(git show origin/obsidian-dc:"$file" 2>/dev/null) || continue
+
+            # 提取文件名（不含路径和扩展名）
+            BASENAME=$(basename "$file" .md)
+
+            # 检查 frontmatter 中是否有 date 字段
+            DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
+
+            # 如果没有 date，用 git 提交日期
+            if [ -z "$DATE" ]; then
+              DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
+              [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
+            fi
+
+            # 生成 Jekyll 文件名: YYYY-MM-DD-slug.md
+            SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9\u4e00-\u9fff]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+            [ -z "$SLUG" ] && SLUG="post"
+            POST_FILE="_posts/${DATE}-${SLUG}.md"
+
+            # 如果没有 frontmatter，自动添加
+            if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
+              TITLE="$BASENAME"
+              cat > "$POST_FILE" << FRONTMATTER
+          ---
+          layout: post
+          title: "$TITLE"
+          date: $DATE
+          categories: []
+          tags: []
+          ---
+
+          FRONTMATTER
+              echo "$CONTENT" >> "$POST_FILE"
+            else
+              # 已有 frontmatter，确保有 date 和 layout
+              echo "$CONTENT" > "$POST_FILE"
+
+              # 如果 frontmatter 中没有 layout，添加
+              if ! grep -q '^layout:' "$POST_FILE"; then
+                sed -i '1a layout: post' "$POST_FILE"
+              fi
+
+              # 如果 frontmatter 中没有 date，添加
+              if ! grep -q '^date:' "$POST_FILE"; then
+                sed -i "/^---$/a date: $DATE" "$POST_FILE" | head -1
+              fi
+            fi
+
+            echo "✅ Synced: $file -> $POST_FILE"
+
+          done <<< "${{ steps.changed.outputs.changed }}"
+
+          # 处理删除的文件
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" != *.md ]] && continue
+
+            BASENAME=$(basename "$file" .md)
+            # 查找并删除对应的 _posts 文件
+            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "🗑️ Deleted: $BASENAME"
+          done <<< "${{ steps.changed.outputs.deleted }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add _posts/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "sync: DC笔记同步到博客 $(date +%Y-%m-%d)"
+            git push
+          fi

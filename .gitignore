@@ -1,8 +1,9 @@
-# Obsidian 系统文件
+# Obsidian 系统文件（不跟踪工作区状态）
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 .obsidian/graph.json
 .obsidian/starred.json
+.obsidian/plugins/obsidian-excalidraw-plugin/
 
 # 只忽略 Network Vault 中非 DC 的顶层目录
 /Notion导入/
