@@ -1,4 +1,4 @@
-name: Sync DC Notes to Drafts
+name: Sync DC Notes to Blog
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - 'DC/**'
 
 jobs:
-  sync-drafts:
+  sync-posts:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,54 +16,101 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Sync DC files to _drafts
+      - name: Get changed DC files
+        id: changed
         run: |
-          mkdir -p _drafts
-
-          # 获取 obsidian-dc 分支的 DC 文件
           git fetch origin obsidian-dc
+          CHANGED=$(git diff --name-only --diff-filter=ACMR origin/main origin/obsidian-dc -- DC/ || true)
+          DELETED=$(git diff --name-only --diff-filter=D origin/main origin/obsidian-dc -- DC/ || true)
+          echo "changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "deleted<<EOF" >> $GITHUB_OUTPUT
+          echo "$DELETED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          # 清空旧的 _drafts/dc/ 内容
-          rm -rf _drafts/dc
-          mkdir -p _drafts/dc
+      - name: Sync to _posts
+        run: |
+          mkdir -p _posts
 
-          # 从 obsidian-dc 分支复制 DC 内容
-          git checkout origin/obsidian-dc -- DC/ 2>/dev/null || true
-          if [ -d DC ]; then
-            cp -r DC/* _drafts/dc/ 2>/dev/null || true
-            rm -rf DC
-          fi
+          # 处理新增/修改的文件
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" != *.md ]] && continue
 
-          # 为没有 frontmatter 的 md 文件自动添加 Jekyll frontmatter
-          for f in _drafts/dc/**/*.md _drafts/dc/*.md; do
-            [ -f "$f" ] || continue
-            # 检查是否已有 frontmatter
-            if ! head -1 "$f" | grep -q '^---'; then
-              title=$(basename "$f" .md)
-              tmp=$(mktemp)
-              cat > "$tmp" << EOF
+            # 从 obsidian-dc 分支获取文件内容
+            CONTENT=$(git show origin/obsidian-dc:"$file" 2>/dev/null) || continue
+
+            # 提取文件名（不含路径和扩展名）
+            BASENAME=$(basename "$file" .md)
+
+            # 检查 frontmatter 中是否有 date 字段
+            DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
+
+            # 如果没有 date，用 git 提交日期
+            if [ -z "$DATE" ]; then
+              DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
+              [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
+            fi
+
+            # 生成 Jekyll 文件名: YYYY-MM-DD-slug.md
+            SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9\u4e00-\u9fff]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+            [ -z "$SLUG" ] && SLUG="post"
+            POST_FILE="_posts/${DATE}-${SLUG}.md"
+
+            # 如果没有 frontmatter，自动添加
+            if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
+              TITLE="$BASENAME"
+              cat > "$POST_FILE" << FRONTMATTER
           ---
           layout: post
-          title: "$title"
-          categories: [dc]
+          title: "$TITLE"
+          date: $DATE
+          categories: []
           tags: []
           ---
 
-          EOF
-              cat "$f" >> "$tmp"
-              mv "$tmp" "$f"
+          FRONTMATTER
+              echo "$CONTENT" >> "$POST_FILE"
+            else
+              # 已有 frontmatter，确保有 date 和 layout
+              echo "$CONTENT" > "$POST_FILE"
+
+              # 如果 frontmatter 中没有 layout，添加
+              if ! grep -q '^layout:' "$POST_FILE"; then
+                sed -i '1a layout: post' "$POST_FILE"
+              fi
+
+              # 如果 frontmatter 中没有 date，添加
+              if ! grep -q '^date:' "$POST_FILE"; then
+                sed -i "/^---$/a date: $DATE" "$POST_FILE" | head -1
+              fi
             fi
-          done
+
+            echo "✅ Synced: $file -> $POST_FILE"
+
+          done <<< "${{ steps.changed.outputs.changed }}"
+
+          # 处理删除的文件
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" != *.md ]] && continue
+
+            BASENAME=$(basename "$file" .md)
+            # 查找并删除对应的 _posts 文件
+            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "🗑️ Deleted: $BASENAME"
+          done <<< "${{ steps.changed.outputs.deleted }}"
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add _drafts/
+          git add _posts/
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "sync: DC笔记自动同步到 _drafts/dc/"
+            git commit -m "sync: DC笔记同步到博客 $(date +%Y-%m-%d)"
             git push
           fi
