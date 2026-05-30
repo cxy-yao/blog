@@ -43,43 +43,28 @@ jobs:
 
             git checkout origin/obsidian-dc -- "$file"
             if [ ! -f "$file" ]; then
-              echo "❌ Failed to checkout: $file"
+              echo "Failed to checkout: $file"
               continue
             fi
 
             CONTENT=$(cat "$file")
             BASENAME=$(basename "$file" .md)
 
-            # 提取 date
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
             if [ -z "$DATE" ]; then
               DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
               [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
             fi
 
-            # 提取 title（从 frontmatter）
             TITLE=$(echo "$CONTENT" | grep -m1 '^title:' | sed 's/^title:\s*//' | tr -d '"' | tr -d "'" | head -1)
             [ -z "$TITLE" ] && TITLE="$BASENAME"
 
-            # 生成 slug：保留中文和英文数字，替换其他字符
-            SLUG=$(python3 -c "
-import re, sys
-name = sys.argv[1]
-# 保留中文、英文字母、数字，其他替换为连字符
-slug = re.sub(r'[^\w\u4e00-\u9fff]', '-', name)
-# 合并多个连字符
-slug = re.sub(r'-+', '-', slug)
-# 去掉首尾连字符
-slug = slug.strip('-')
-# 如果太长，截取前50个字符
-if len(slug) > 50:
-    slug = slug[:50].rstrip('-')
-print(slug or 'post')
-" "$BASENAME")
+            # Generate slug: keep alphanumeric and Chinese, replace others with hyphens
+            SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-50)
+            [ -z "$SLUG" ] && SLUG="post"
 
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
-            # 写入文件
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
               cat > "$POST_FILE" << EOF
           ---
@@ -98,7 +83,7 @@ print(slug or 'post')
               grep -q '^date:' "$POST_FILE" || sed -i "/^---$/a date: $DATE" "$POST_FILE"
             fi
 
-            echo "✅ Synced: $file -> $POST_FILE"
+            echo "Synced: $file -> $POST_FILE"
 
             rm -f "$file"
             rmdir -p "$(dirname "$file")" 2>/dev/null || true
@@ -109,7 +94,7 @@ print(slug or 'post')
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
             BASENAME=$(basename "$file" .md)
-            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "🗑️ Deleted: $BASENAME"
+            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "Deleted: $BASENAME"
           done <<< "${{ steps.changed.outputs.deleted }}"
 
       - name: Commit and push
@@ -120,6 +105,6 @@ print(slug or 'post')
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "sync: DC笔记同步到博客 $(date +%Y-%m-%d)"
+            git commit -m "sync: DC notes to blog $(date +%Y-%m-%d)"
             git push
           fi
