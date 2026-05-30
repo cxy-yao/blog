@@ -13,7 +13,7 @@ BGP（Border Gateway Protocol）是互联网的核心路由协议，用于在不
 
 ## 拓扑图
 
-![[BGP多宿主拓扑图.excalidraw|800]]
+![[.辅助文件/BGP多宿主拓扑图.excalidraw|800]]
 
 ## 设计要素
 
