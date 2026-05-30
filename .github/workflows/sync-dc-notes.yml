@@ -22,7 +22,6 @@ jobs:
         id: changed
         run: |
           git fetch origin obsidian-dc
-          # 使用 -z 处理中文文件名
           CHANGED=$(git diff --name-only --diff-filter=ACMR -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
           DELETED=$(git diff --name-only --diff-filter=D -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
           echo "changed<<EOF" >> $GITHUB_OUTPUT
@@ -36,14 +35,12 @@ jobs:
         run: |
           mkdir -p _posts
 
-          # 处理新增/修改的文件
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
 
             echo "Processing: $file"
 
-            # 用 checkout 方式获取文件（避免中文编码问题）
             git checkout origin/obsidian-dc -- "$file"
             if [ ! -f "$file" ]; then
               echo "❌ Failed to checkout: $file"
@@ -51,28 +48,40 @@ jobs:
             fi
 
             CONTENT=$(cat "$file")
-
-            # 提取文件名（不含路径和扩展名）
             BASENAME=$(basename "$file" .md)
 
-            # 检查 frontmatter 中是否有 date 字段
+            # 提取 date
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
-
-            # 如果没有 date，用 git 提交日期
             if [ -z "$DATE" ]; then
               DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
               [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
             fi
 
-            # 生成 Jekyll 文件名: YYYY-MM-DD-slug.md
-            SLUG=$(echo "$BASENAME" | sed 's/[^a-zA-Z0-9\u4e00-\u9fff]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-            [ -z "$SLUG" ] && SLUG="post"
+            # 提取 title（从 frontmatter）
+            TITLE=$(echo "$CONTENT" | grep -m1 '^title:' | sed 's/^title:\s*//' | tr -d '"' | tr -d "'" | head -1)
+            [ -z "$TITLE" ] && TITLE="$BASENAME"
+
+            # 生成 slug：保留中文和英文数字，替换其他字符
+            SLUG=$(python3 -c "
+import re, sys
+name = sys.argv[1]
+# 保留中文、英文字母、数字，其他替换为连字符
+slug = re.sub(r'[^\w\u4e00-\u9fff]', '-', name)
+# 合并多个连字符
+slug = re.sub(r'-+', '-', slug)
+# 去掉首尾连字符
+slug = slug.strip('-')
+# 如果太长，截取前50个字符
+if len(slug) > 50:
+    slug = slug[:50].rstrip('-')
+print(slug or 'post')
+" "$BASENAME")
+
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
-            # 如果没有 frontmatter，自动添加
+            # 写入文件
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
-              TITLE="$BASENAME"
-              cat > "$POST_FILE" << FRONTMATTER
+              cat > "$POST_FILE" << EOF
           ---
           layout: post
           title: "$TITLE"
@@ -81,38 +90,25 @@ jobs:
           tags: []
           ---
 
-          FRONTMATTER
+          EOF
               echo "$CONTENT" >> "$POST_FILE"
             else
-              # 已有 frontmatter，确保有 date 和 layout
               echo "$CONTENT" > "$POST_FILE"
-
-              # 如果 frontmatter 中没有 layout，添加
-              if ! grep -q '^layout:' "$POST_FILE"; then
-                sed -i '1a layout: post' "$POST_FILE"
-              fi
-
-              # 如果 frontmatter 中没有 date，添加
-              if ! grep -q '^date:' "$POST_FILE"; then
-                sed -i "/^---$/a date: $DATE" "$POST_FILE" | head -1
-              fi
+              grep -q '^layout:' "$POST_FILE" || sed -i '1a layout: post' "$POST_FILE"
+              grep -q '^date:' "$POST_FILE" || sed -i "/^---$/a date: $DATE" "$POST_FILE"
             fi
 
             echo "✅ Synced: $file -> $POST_FILE"
 
-            # 清理 checkout 的源文件
             rm -f "$file"
             rmdir -p "$(dirname "$file")" 2>/dev/null || true
 
           done <<< "${{ steps.changed.outputs.changed }}"
 
-          # 处理删除的文件
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
-
             BASENAME=$(basename "$file" .md)
-            # 查找并删除对应的 _posts 文件
             find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "🗑️ Deleted: $BASENAME"
           done <<< "${{ steps.changed.outputs.deleted }}"
 
