@@ -1,7 +1,8 @@
 title: ChenChuLin的博客
 description: 网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维
 author: ChenChuLin
-url: "https://cxy-yao.github.io/blog"
+url: "https://cxy-yao.github.io"
+baseurl: "/blog"
 lang: zh-CN
 
 # 社交链接
