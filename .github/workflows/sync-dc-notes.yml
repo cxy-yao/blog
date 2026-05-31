@@ -61,6 +61,8 @@ jobs:
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
+            # 排除辅助文件目录（Excalidraw、模板等不发布到博客）
+            [[ "$file" == *"/辅助文件/"* ]] && continue
 
             echo "Processing: $file"
 
