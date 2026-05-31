@@ -1,0 +1,925 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "hermes-agent",
+  "elements": [
+    {
+      "type": "text",
+      "id": "title",
+      "x": 250,
+      "y": 30,
+      "text": "Spine-Leaf 数据中心拓扑",
+      "fontSize": 24,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "originalText": "Spine-Leaf 数据中心拓扑",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "spine1",
+      "x": 200,
+      "y": 100,
+      "width": 160,
+      "height": 60,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#1971c2",
+      "boundElements": [
+        {
+          "id": "t_spine1",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_spine1",
+      "x": 205,
+      "y": 110,
+      "width": 150,
+      "height": 25,
+      "text": "Spine-1 (CE12800)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "spine1",
+      "originalText": "Spine-1 (CE12800)",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "spine2",
+      "x": 450,
+      "y": 100,
+      "width": 160,
+      "height": 60,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#1971c2",
+      "boundElements": [
+        {
+          "id": "t_spine2",
+          "type": "text"
+        },
+        {
+          "id": "a5",
+          "type": "arrow"
+        },
+        {
+          "id": "a6",
+          "type": "arrow"
+        },
+        {
+          "id": "a7",
+          "type": "arrow"
+        },
+        {
+          "id": "a8",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_spine2",
+      "x": 455,
+      "y": 110,
+      "width": 150,
+      "height": 25,
+      "text": "Spine-2 (CE12800)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "spine2",
+      "originalText": "Spine-2 (CE12800)",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "leaf1",
+      "x": 100,
+      "y": 250,
+      "width": 140,
+      "height": 50,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#2f9e44",
+      "boundElements": [
+        {
+          "id": "t_leaf1",
+          "type": "text"
+        },
+        {
+          "id": "a1",
+          "type": "arrow"
+        },
+        {
+          "id": "a5",
+          "type": "arrow"
+        },
+        {
+          "id": "a9",
+          "type": "arrow"
+        },
+        {
+          "id": "a10",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_leaf1",
+      "x": 105,
+      "y": 255,
+      "width": 130,
+      "height": 25,
+      "text": "Leaf-1 (CE6860)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "leaf1",
+      "originalText": "Leaf-1 (CE6860)",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "leaf2",
+      "x": 280,
+      "y": 250,
+      "width": 140,
+      "height": 50,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#2f9e44",
+      "boundElements": [
+        {
+          "id": "t_leaf2",
+          "type": "text"
+        },
+        {
+          "id": "a2",
+          "type": "arrow"
+        },
+        {
+          "id": "a6",
+          "type": "arrow"
+        },
+        {
+          "id": "a11",
+          "type": "arrow"
+        },
+        {
+          "id": "a12",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_leaf2",
+      "x": 285,
+      "y": 255,
+      "width": 130,
+      "height": 25,
+      "text": "Leaf-2 (CE6860)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "leaf2",
+      "originalText": "Leaf-2 (CE6860)",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "leaf3",
+      "x": 460,
+      "y": 250,
+      "width": 140,
+      "height": 50,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#2f9e44",
+      "boundElements": [
+        {
+          "id": "t_leaf3",
+          "type": "text"
+        },
+        {
+          "id": "a3",
+          "type": "arrow"
+        },
+        {
+          "id": "a7",
+          "type": "arrow"
+        },
+        {
+          "id": "a13",
+          "type": "arrow"
+        },
+        {
+          "id": "a14",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_leaf3",
+      "x": 465,
+      "y": 255,
+      "width": 130,
+      "height": 25,
+      "text": "Leaf-3 (CE6860)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "leaf3",
+      "originalText": "Leaf-3 (CE6860)",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "leaf4",
+      "x": 640,
+      "y": 250,
+      "width": 140,
+      "height": 50,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#2f9e44",
+      "boundElements": [
+        {
+          "id": "t_leaf4",
+          "type": "text"
+        },
+        {
+          "id": "a4",
+          "type": "arrow"
+        },
+        {
+          "id": "a8",
+          "type": "arrow"
+        },
+        {
+          "id": "a15",
+          "type": "arrow"
+        },
+        {
+          "id": "a16",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_leaf4",
+      "x": 645,
+      "y": 255,
+      "width": 130,
+      "height": 25,
+      "text": "Leaf-4 (CE6860)",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "leaf4",
+      "originalText": "Leaf-4 (CE6860)",
+      "autoResize": true
+    },
+    {
+      "type": "arrow",
+      "id": "a1",
+      "x": 250,
+      "y": 160,
+      "width": 100,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -110,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.25,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a2",
+      "x": 280,
+      "y": 160,
+      "width": 40,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a3",
+      "x": 310,
+      "y": 160,
+      "width": 200,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          190,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          0.75,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a4",
+      "x": 340,
+      "y": 160,
+      "width": 340,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          340,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine1",
+        "fixedPoint": [
+          1,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a5",
+      "x": 500,
+      "y": 160,
+      "width": 340,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -340,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a6",
+      "x": 530,
+      "y": 160,
+      "width": 200,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -190,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.25,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a7",
+      "x": 550,
+      "y": 160,
+      "width": 40,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -40,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a8",
+      "x": 580,
+      "y": 160,
+      "width": 100,
+      "height": 90,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          110,
+          90
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "spine2",
+        "fixedPoint": [
+          0.75,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "rectangle",
+      "id": "srv1",
+      "x": 100,
+      "y": 380,
+      "width": 120,
+      "height": 40,
+      "backgroundColor": "#e9ecef",
+      "fillStyle": "solid",
+      "strokeColor": "#495057",
+      "boundElements": [
+        {
+          "id": "t_srv1",
+          "type": "text"
+        },
+        {
+          "id": "a9",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_srv1",
+      "x": 105,
+      "y": 385,
+      "width": 110,
+      "height": 25,
+      "text": "Server-1",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "srv1",
+      "originalText": "Server-1",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "srv2",
+      "x": 260,
+      "y": 380,
+      "width": 120,
+      "height": 40,
+      "backgroundColor": "#e9ecef",
+      "fillStyle": "solid",
+      "strokeColor": "#495057",
+      "boundElements": [
+        {
+          "id": "t_srv2",
+          "type": "text"
+        },
+        {
+          "id": "a11",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_srv2",
+      "x": 265,
+      "y": 385,
+      "width": 110,
+      "height": 25,
+      "text": "Server-2",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "srv2",
+      "originalText": "Server-2",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "srv3",
+      "x": 440,
+      "y": 380,
+      "width": 120,
+      "height": 40,
+      "backgroundColor": "#e9ecef",
+      "fillStyle": "solid",
+      "strokeColor": "#495057",
+      "boundElements": [
+        {
+          "id": "t_srv3",
+          "type": "text"
+        },
+        {
+          "id": "a13",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_srv3",
+      "x": 445,
+      "y": 385,
+      "width": 110,
+      "height": 25,
+      "text": "Server-3",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "srv3",
+      "originalText": "Server-3",
+      "autoResize": true
+    },
+    {
+      "type": "rectangle",
+      "id": "srv4",
+      "x": 620,
+      "y": 380,
+      "width": 120,
+      "height": 40,
+      "backgroundColor": "#e9ecef",
+      "fillStyle": "solid",
+      "strokeColor": "#495057",
+      "boundElements": [
+        {
+          "id": "t_srv4",
+          "type": "text"
+        },
+        {
+          "id": "a15",
+          "type": "arrow"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "t_srv4",
+      "x": 625,
+      "y": 385,
+      "width": 110,
+      "height": 25,
+      "text": "Server-4",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "srv4",
+      "originalText": "Server-4",
+      "autoResize": true
+    },
+    {
+      "type": "arrow",
+      "id": "a9",
+      "x": 170,
+      "y": 300,
+      "width": 10,
+      "height": 80,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "leaf1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv1",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a11",
+      "x": 350,
+      "y": 300,
+      "width": 10,
+      "height": 80,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "leaf2",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a13",
+      "x": 530,
+      "y": 300,
+      "width": 10,
+      "height": 80,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "leaf3",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "a15",
+      "x": 710,
+      "y": 300,
+      "width": 10,
+      "height": 80,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          80
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "startBinding": {
+        "elementId": "leaf4",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "srv4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "id": "legend",
+      "x": 100,
+      "y": 450,
+      "text": "图例：蓝色=Spine层  绿色=Leaf层  灰色=服务器",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#757575",
+      "originalText": "图例：蓝色=Spine层  绿色=Leaf层  灰色=服务器",
+      "autoResize": true
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "theme": "light"
+  }
+}
