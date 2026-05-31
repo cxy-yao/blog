@@ -16,14 +16,17 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: Install Jekyll
-        run: gem install jekyll bundler
+        run: |
+          gem install bundler
+          bundle install
+          bundle update bigdecimal
 
       - name: Build Jekyll
-        run: jekyll build --destination _site
+        run: bundle exec jekyll build --destination _site
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
