@@ -1,6 +1,6 @@
 ---
 layout: post
-title: <% tp.file.cursor(1) %>
+title: "网络故障排查"
 date: 2026-06-01
 categories:
   - 故障排查
