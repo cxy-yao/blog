@@ -1,10 +1,15 @@
 ---
 layout: post
-title: "BGP 多宿主网络设计与配置"
+title: BGP 多宿主网络设计与配置
 date: 2026-05-30
-categories: [路由交换]
-tags: [BGP, eBGP, iBGP, 路由协议]
-excerpt: "BGP多宿主网络设计，通过多个ISP连接提高网络可用性和负载均衡。"
+categories:
+  - 路由交换
+tags:
+  - BGP
+  - eBGP
+  - iBGP
+  - 路由协议
+excerpt: BGP多宿主网络设计，通过多个ISP连接提高网络可用性和负载均衡。
 ---
 
 ## 概述
