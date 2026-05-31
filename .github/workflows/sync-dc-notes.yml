@@ -40,7 +40,7 @@ jobs:
             rm -f "$svg"
           done <<< "$SVG_FILES"
 
-          # 2. 获取 DC .md 文件列表
+          # 2. 获取 DC .md 文件列表（排除辅助文件）
           DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | while read -r line; do
             line="${line#\"}"
             line="${line%\"}"
@@ -71,11 +71,16 @@ jobs:
             # 提取正文
             BODY=$(awk 'BEGIN{c=0} /^---$/{c++; next} c>=2{print}' "$file")
 
-            # 转换 Obsidian 语法：
-            # 1. ![[辅助文件/xxx.svg|width]] -> ![xxx](/assets/xxx.svg)
-            # 2. ![[辅助文件/xxx.excalidraw|width]] -> 删除
-            BODY=$(echo "$BODY" | sed -E 's|!\[\[辅助文件/([^]|]+)\.svg\|?([0-9]*)\]\]|![\1](/assets/\1.svg)|g')
-            BODY=$(echo "$BODY" | sed '/!\[\[.*\.excalidraw.*\]\]/d')
+            # 转换 Obsidian 语法：![[辅助文件/xxx.svg|width]] -> ![xxx](/assets/xxx.svg)
+            BODY=$(echo "$BODY" | python3 -c "
+          import sys, re
+          text = sys.stdin.read()
+          # ![[辅助文件/xxx.svg|width]] -> ![xxx](/assets/xxx.svg)
+          text = re.sub(r'!\[\[辅助文件/([^]|]+)\.svg\|?\d*\]\]', r'![\1](/assets/\1.svg)', text)
+          # 删除 excalidraw 嵌入
+          text = re.sub(r'!\[\[.*\.excalidraw.*\]\]', '', text)
+          print(text, end='')
+          ")
 
             # 默认值
             [ -z "$TITLE" ] && TITLE=$(basename "$file" .md)
@@ -84,8 +89,15 @@ jobs:
             [ -z "$TAGS" ] && TAGS="[]"
             [ -z "$EXCERPT" ] && EXCERPT=""
 
-            # 生成文件名
-            SLUG=$(echo "$TITLE" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-50)
+            # 生成文件名（用 python 处理中文 slug）
+            SLUG=$(python3 -c "
+          import re, sys
+          title = sys.argv[1]
+          slug = re.sub(r'[^\w\u4e00-\u9fff]', '-', title)
+          slug = re.sub(r'-+', '-', slug).strip('-')
+          print(slug[:50] if slug else 'post')
+          " "$TITLE")
+
             [ -z "$SLUG" ] && SLUG="post"
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
@@ -121,7 +133,7 @@ jobs:
             fi
           done
 
-          # 4. 清理 main 分支上的 DC 目录（不要同步过来）
+          # 清理 DC 目录
           rm -rf DC/
 
       - name: Commit and push
@@ -129,7 +141,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add _posts/ assets/
-          # 删除 DC 目录（如果存在）
           git rm -r --cached DC/ 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes"
