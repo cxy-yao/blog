@@ -31,6 +31,28 @@ jobs:
           echo "$DELETED" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Create helper script
+        run: |
+          cat > /tmp/slug.py << 'PYEOF'
+          import re, sys
+          name = sys.argv[1]
+          slug = re.sub(r'[^\w\u4e00-\u9fff]', '-', name)
+          slug = re.sub(r'-+', '-', slug).strip('-')
+          print(slug if slug else 'post')
+          PYEOF
+
+          cat > /tmp/insert_fm.py << 'PYEOF'
+          import sys
+          lines = open(sys.argv[1]).readlines()
+          key = sys.argv[2] + ':'
+          val = sys.argv[3]
+          for i, line in enumerate(lines):
+              if line.strip() == '---' and i > 0:
+                  lines.insert(i, f'{key} {val}\n')
+                  break
+          open(sys.argv[1], 'w').writelines(lines)
+          PYEOF
+
       - name: Sync to _posts
         run: |
           mkdir -p _posts
@@ -43,33 +65,22 @@ jobs:
 
             git checkout origin/obsidian-dc -- "$file"
             if [ ! -f "$file" ]; then
-              echo "❌ Failed to checkout: $file"
+              echo "Failed to checkout: $file"
               continue
             fi
 
             CONTENT=$(cat "$file")
             BASENAME=$(basename "$file" .md)
 
-            # 提取 date
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
             if [ -z "$DATE" ]; then
               DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
               [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
             fi
 
-            # 生成 slug：用 python3 处理 Unicode，保留中文
-            SLUG=$(python3 -c "
-import re, sys
-name = sys.argv[1]
-# 保留中文、字母、数字，其余替换为连字符
-slug = re.sub(r'[^\w\u4e00-\u9fff]', '-', name)
-# 合并多余连字符
-slug = re.sub(r'-+', '-', slug).strip('-')
-print(slug if slug else 'post')
-" "$BASENAME")
+            SLUG=$(python3 /tmp/slug.py "$BASENAME")
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
-            # 处理 frontmatter
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
               TITLE="$BASENAME"
               cat > "$POST_FILE" << FRONTMATTER
@@ -86,42 +97,25 @@ print(slug if slug else 'post')
             else
               echo "$CONTENT" > "$POST_FILE"
               if ! grep -q '^layout:' "$POST_FILE"; then
-                python3 -c "
-import sys
-lines = open(sys.argv[1]).readlines()
-for i, line in enumerate(lines):
-    if line.strip() == '---' and i > 0:
-        lines.insert(i, 'layout: post\n')
-        break
-open(sys.argv[1], 'w').writelines(lines)
-" "$POST_FILE"
+                python3 /tmp/insert_fm.py "$POST_FILE" "layout" "post"
               fi
               if ! grep -q '^date:' "$POST_FILE"; then
-                python3 -c "
-import sys
-lines = open(sys.argv[1]).readlines()
-for i, line in enumerate(lines):
-    if line.strip() == '---' and i > 0:
-        lines.insert(i, f'date: {sys.argv[2]}\n')
-        break
-open(sys.argv[1], 'w').writelines(lines)
-" "$POST_FILE" "$DATE"
+                python3 /tmp/insert_fm.py "$POST_FILE" "date" "$DATE"
               fi
             fi
 
-            echo "✅ Synced: $file -> $POST_FILE"
+            echo "Synced: $file -> $POST_FILE"
 
             rm -f "$file"
             rmdir -p "$(dirname "$file")" 2>/dev/null || true
 
           done <<< "${{ steps.changed.outputs.changed }}"
 
-          # 处理删除的文件
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" != *.md ]] && continue
             BASENAME=$(basename "$file" .md)
-            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "🗑️ Deleted: $BASENAME"
+            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "Deleted: $BASENAME"
           done <<< "${{ steps.changed.outputs.deleted }}"
 
       - name: Commit and push
