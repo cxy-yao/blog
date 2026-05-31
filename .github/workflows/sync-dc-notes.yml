@@ -19,20 +19,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Get changed DC files
-        id: changed
-        run: |
-          git fetch origin obsidian-dc
-          CHANGED=$(git diff --name-only --diff-filter=ACMR -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
-          DELETED=$(git diff --name-only --diff-filter=D -z origin/main origin/obsidian-dc -- DC/ | tr '\0' '\n' || true)
-          echo "changed<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "deleted<<EOF" >> $GITHUB_OUTPUT
-          echo "$DELETED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create helper script
+      - name: Create helper scripts
         run: |
           cat > /tmp/slug.py << 'PYEOF'
           import re, sys
@@ -45,81 +32,95 @@ jobs:
           cat > /tmp/insert_fm.py << 'PYEOF'
           import sys
           lines = open(sys.argv[1]).readlines()
-          key = sys.argv[2] + ':'
+          key = sys.argv[2]
           val = sys.argv[3]
           for i, line in enumerate(lines):
               if line.strip() == '---' and i > 0:
-                  lines.insert(i, f'{key} {val}\n')
+                  lines.insert(i, f'{key}: {val}\n')
                   break
           open(sys.argv[1], 'w').writelines(lines)
           PYEOF
 
-      - name: Sync to _posts
+      - name: Sync DC notes to _posts
         run: |
+          git fetch origin obsidian-dc
           mkdir -p _posts
 
+          # 获取 obsidian-dc 分支上所有 DC/ 下的 md 文件（排除辅助文件）
+          DC_FILES=$(git ls-tree -r --name-only origin/obsidian-dc -- DC/ | grep '\.md$' | grep -v '/辅助文件/' || true)
+
+          # 同步每个 DC 文件
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            [[ "$file" != *.md ]] && continue
-            # 排除辅助文件目录（Excalidraw、模板等不发布到博客）
-            [[ "$file" == *"/辅助文件/"* ]] && continue
 
-            echo "Processing: $file"
-
-            git checkout origin/obsidian-dc -- "$file"
-            if [ ! -f "$file" ]; then
-              echo "Failed to checkout: $file"
-              continue
-            fi
-
-            CONTENT=$(cat "$file")
+            CONTENT=$(git show origin/obsidian-dc:"$file" 2>/dev/null) || continue
             BASENAME=$(basename "$file" .md)
 
+            # 提取日期
             DATE=$(echo "$CONTENT" | grep -m1 '^date:' | sed 's/^date:\s*//' | tr -d '"' | tr -d "'" | head -1)
             if [ -z "$DATE" ]; then
               DATE=$(git log origin/obsidian-dc -1 --format="%ai" -- "$file" 2>/dev/null | cut -d' ' -f1)
               [ -z "$DATE" ] && DATE=$(date +%Y-%m-%d)
             fi
 
+            # 生成 ASCII-safe slug（避免中文文件名编码问题）
             SLUG=$(python3 /tmp/slug.py "$BASENAME")
             POST_FILE="_posts/${DATE}-${SLUG}.md"
 
+            # 检查是否已存在（通过 dc-source 标记）
+            EXISTING_POST=$(grep -rl "dc-source: \"${file}\"" _posts/ 2>/dev/null | head -1)
+
+            if [ -n "$EXISTING_POST" ] && [ "$EXISTING_POST" != "$POST_FILE" ]; then
+              rm -f "$EXISTING_POST"
+              echo "Removed old: $EXISTING_POST"
+            fi
+
+            # 写入文件
             if ! echo "$CONTENT" | head -1 | grep -q '^---'; then
-              TITLE="$BASENAME"
-              cat > "$POST_FILE" << FRONTMATTER
+              # 没有 frontmatter，自动添加
+              cat > "$POST_FILE" << EOF
           ---
           layout: post
-          title: "$TITLE"
-          date: $DATE
+          title: "${BASENAME}"
+          date: ${DATE}
           categories: []
           tags: []
+          dc-sync: true
+          dc-source: "${file}"
           ---
 
-          FRONTMATTER
+          EOF
               echo "$CONTENT" >> "$POST_FILE"
             else
               echo "$CONTENT" > "$POST_FILE"
+
+              if ! grep -q '^dc-source:' "$POST_FILE"; then
+                python3 /tmp/insert_fm.py "$POST_FILE" "dc-source" "\"$file\""
+                python3 /tmp/insert_fm.py "$POST_FILE" "dc-sync" "true"
+              fi
+
               if ! grep -q '^layout:' "$POST_FILE"; then
                 python3 /tmp/insert_fm.py "$POST_FILE" "layout" "post"
               fi
+
               if ! grep -q '^date:' "$POST_FILE"; then
                 python3 /tmp/insert_fm.py "$POST_FILE" "date" "$DATE"
               fi
             fi
 
             echo "Synced: $file -> $POST_FILE"
+          done <<< "$DC_FILES"
 
-            rm -f "$file"
-            rmdir -p "$(dirname "$file")" 2>/dev/null || true
-
-          done <<< "${{ steps.changed.outputs.changed }}"
-
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            [[ "$file" != *.md ]] && continue
-            BASENAME=$(basename "$file" .md)
-            find _posts -name "*${BASENAME}*" -delete 2>/dev/null && echo "Deleted: $BASENAME"
-          done <<< "${{ steps.changed.outputs.deleted }}"
+          # 删除已不存在的 DC 文件对应的 _posts
+          for post in _posts/*.md; do
+            [ -f "$post" ] || continue
+            SRC=$(grep '^dc-source:' "$post" 2>/dev/null | awk -F'"' '{print $2}')
+            [ -z "$SRC" ] && continue
+            if ! git ls-tree origin/obsidian-dc -- "$SRC" >/dev/null 2>&1; then
+              rm -f "$post"
+              echo "Deleted orphan: $post (source $SRC no longer exists)"
+            fi
+          done
 
       - name: Commit and push
         run: |
