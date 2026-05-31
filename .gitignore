@@ -1,6 +1,9 @@
 # Obsidian 系统文件（整个目录不同步）
 .obsidian/
 
+# GitHub Actions 文件（不同步到 Obsidian）
+.github/
+
 # 辅助文件目录（Excalidraw、模板等，不同步到博客）
 /辅助文件/
 DC/辅助文件/
