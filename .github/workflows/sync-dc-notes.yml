@@ -1,6 +1,7 @@
 name: Sync DC Notes to Blog
 
 on:
+  workflow_dispatch:
   push:
     branches: [obsidian-dc]
     paths:
