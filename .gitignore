@@ -1,7 +1,9 @@
-# Obsidian 系统文件（工作区状态，不同步）
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/starred.json
+# Obsidian 系统文件（整个目录不同步）
+.obsidian/
+
+# 辅助文件目录（Excalidraw、模板等，不同步到博客）
+/辅助文件/
+DC/辅助文件/
 
 # 忽略非 DC 的顶层目录
 /Notion导入/
