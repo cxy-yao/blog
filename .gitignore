@@ -4,3 +4,5 @@ Gemfile.lock
 .jekyll-cache
 .jekyll-metadata
 .sass-cache
+DC/
+__pycache__/
