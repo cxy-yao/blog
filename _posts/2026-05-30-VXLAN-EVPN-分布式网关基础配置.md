@@ -9,7 +9,6 @@ dc-sync: true
 dc-source: "DC/VXLAN-EVPN分布式网关基础配置.md"
 ---
 
-
 ## 背景
 
 在 Spine-Leaf 架构中，VXLAN EVPN 分布式网关实现了跨 Leaf 节点的三层互通。每个 Leaf 交换机都充当 VTEP（VXLAN Tunnel Endpoint），通过 EVPN 控制面学习远端主机路由。
