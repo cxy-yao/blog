@@ -1,0 +1,21 @@
+# Jekyll Configuration
+title: CXY's Blog
+description: 技术笔记与学习记录
+baseurl: /blog
+url: https://cxy-yao.github.io
+
+# Build settings
+markdown: kramdown
+encoding: UTF-8
+
+# Exclude DC/ directory (Obsidian notes, not blog posts)
+exclude:
+  - DC/
+  - Notion导入/
+  - 辅助文件/
+  - sync-notes.py
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
