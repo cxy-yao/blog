@@ -17,10 +17,12 @@ excerpt: ""
 
 在 Spine-Leaf 架构中，VXLAN EVPN 分布式网关实现了跨 Leaf 节点的三层互通。每个 Leaf 交换机都充当 VTEP（VXLAN Tunnel Endpoint），通过 EVPN 控制面学习远端主机路由。
 
-## 拓扑图
+## 拓扑
 
+
+![[智能无损网络技术架构全景.excalidraw]]
 ![[辅助文件/AI算力网络拓扑示例.excalidraw|800]]
-
+![[AI集群智能无损网络架构.excalidraw]]
 ## 核心组件
 
 | 组件 | 作用 | 典型设备 |
