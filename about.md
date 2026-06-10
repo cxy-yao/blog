@@ -256,8 +256,8 @@ permalink: /about/
         <h2><i class="fas fa-paper-plane"></i> 联系方式</h2>
         <div class="contact-links">
             <a href="" target="_blank" class="contact-btn"><i class="fab fa-github"></i> GitHub</a>
-            <a href="https://www.linkedin.com/in/chenchulin/" target="_blank" class="contact-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
-            <a href="mailto:{{ site.email | default: 'chenchulin@example.com' }}" class="contact-btn"><i class="fas fa-envelope"></i> Email</a>
+            <a href="" target="_blank" class="contact-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            <a href="" class="contact-btn"><i class="fas fa-envelope"></i> Email</a>
         </div>
     </section>
 </div>
