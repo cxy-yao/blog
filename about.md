@@ -128,6 +128,123 @@ permalink: /about/
     .contact-links { flex-direction: column; }
     .contact-btn { width: 100%; justify-content: center; }
 }
+
+/* === 写作统计 === */
+.writing-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.writing-stat-card {
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-sm);
+    padding: 24px 16px;
+    text-align: center;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+.writing-stat-card:hover {
+    border-color: rgba(59,130,246,0.2);
+    transform: translateY(-3px);
+}
+.writing-stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+}
+.writing-stat-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* === 热力图 === */
+.heatmap-wrap {
+    background: rgba(0,0,0,0.12);
+    border-radius: var(--radius-sm);
+    padding: 24px;
+    border: 1px solid var(--glass-border);
+}
+.heatmap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.hm-cell {
+    width: 13px; height: 13px;
+    border-radius: 3px;
+    display: inline-block;
+    background: rgba(255,255,255,0.04);
+}
+.hm-lv0 { background: rgba(255,255,255,0.04); }
+.hm-lv1 { background: rgba(6,182,212,0.3); }
+.hm-lv2 { background: rgba(6,182,212,0.5); }
+.hm-lv3 { background: rgba(6,182,212,0.8); }
+.hm-lv4 { background: #06b6d4; box-shadow: 0 0 6px rgba(6,182,212,0.4); }
+
+.heatmap-body { display: flex; flex-direction: column; gap: 0; }
+.hm-months {
+    display: flex;
+    padding-left: 32px;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+.hm-months span {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+}
+.hm-grid {
+    display: flex;
+    gap: 4px;
+}
+.hm-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-right: 6px;
+    padding-top: 0;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    line-height: 13px;
+}
+.hm-labels span { height: 13px; }
+.hm-cells {
+    display: grid;
+    grid-template-rows: repeat(7, 13px);
+    grid-auto-flow: column;
+    gap: 3px;
+    flex: 1;
+}
+.hm-cells .hm-cell { cursor: default; }
+.hm-cells .hm-cell:hover {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 1px;
+    transform: scale(1.15);
+    z-index: 2;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .writing-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .heatmap-wrap { padding: 16px; overflow-x: auto; }
+}
 </style>
 
 <div class="about-page">
@@ -152,6 +269,59 @@ permalink: /about/
             <div class="stat-label">主要领域</div>
         </div>
     </div>
+
+    <!-- 写作统计 + 热力图 -->
+    <section class="about-section reveal">
+        <h2><i class="fas fa-chart-bar"></i> 写作统计</h2>
+
+        <div class="writing-stats-row">
+            <div class="writing-stat-card">
+                <div class="writing-stat-num">{{ site.posts.size }}</div>
+                <div class="writing-stat-label">总文章</div>
+            </div>
+            <div class="writing-stat-card">
+                <div class="writing-stat-num" id="totalWords">-</div>
+                <div class="writing-stat-label">总字数</div>
+            </div>
+            <div class="writing-stat-card">
+                <div class="writing-stat-num" id="firstPostDate">-</div>
+                <div class="writing-stat-label">最早文章</div>
+            </div>
+            <div class="writing-stat-card">
+                <div class="writing-stat-num">{{ site.categories.size }}</div>
+                <div class="writing-stat-label">分类数</div>
+            </div>
+        </div>
+
+        <div class="heatmap-wrap">
+            <div class="heatmap-header">
+                <span>写作热力图</span>
+                <span class="heatmap-legend">
+                    <span>少</span>
+                    <span class="hm-cell hm-lv0"></span>
+                    <span class="hm-cell hm-lv1"></span>
+                    <span class="hm-cell hm-lv2"></span>
+                    <span class="hm-cell hm-lv3"></span>
+                    <span>多</span>
+                </span>
+            </div>
+            <div class="heatmap-body">
+                <div class="hm-months" id="hmMonths"></div>
+                <div class="hm-grid">
+                    <div class="hm-labels"><span>一</span><span>三</span><span>五</span><span>日</span></div>
+                    <div class="hm-cells" id="hmCells"></div>
+                </div>
+            </div>
+        </div>
+
+        <script id="postDatesData" type="application/json">[
+            {% for post in site.posts %}
+            {% assign d = post.date | date: '%Y-%m-%d' %}
+            {% assign w = post.content | number_of_words %}
+            "{{ d }}|{{ w }}"{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+        ]</script>
+    </section>
 
     <section class="about-section reveal">
         <h2><i class="fas fa-user-astronaut"></i> 关于我</h2>
@@ -261,3 +431,122 @@ permalink: /about/
         </div>
     </section>
 </div>
+
+<script>
+(function() {
+    /* === 获取文章数据 === */
+    var dataEl = document.getElementById('postDatesData');
+    if (!dataEl) return;
+    var raw = JSON.parse(dataEl.textContent || '[]');
+    if (!raw.length) return;
+    
+    var dates = raw.map(function(s) { return s.split('|')[0]; });
+    var words = raw.map(function(s) { return parseInt(s.split('|')[1] || '0', 10); });
+    var totalWords = words.reduce(function(a,b){return a+b}, 0);
+    document.getElementById('totalWords').textContent = totalWords.toLocaleString();
+    document.getElementById('firstPostDate').textContent = dates[dates.length - 1];
+    
+    /* === 构建日期计数 === */
+    var counts = {};
+    dates.forEach(function(d) { counts[d] = (counts[d] || 0) + 1; });
+    
+    /* === 确定时间范围（从最早文章到本周日） === */
+    var sortedDates = Object.keys(counts).sort();
+    var start = new Date(sortedDates[0]);
+    var today = new Date();
+    
+    // 对齐到本周一开始
+    var startDay = start.getDay();
+    var startMon = new Date(start);
+    startMon.setDate(startMon.getDate() - (startDay === 0 ? 6 : startDay - 1));
+    
+    // 对齐到今天所在周的周日
+    var endDay = today.getDay();
+    var endSun = new Date(today);
+    endSun.setDate(endSun.getDate() + (endDay === 0 ? 0 : 7 - endDay));
+    
+    /* === 生成月份标签 === */
+    var monthsEl = document.getElementById('hmMonths');
+    var months = [];
+    var cur = new Date(startMon);
+    while (cur <= endSun) {
+        var m = cur.getMonth();
+        if (!months.some(function(x){return x.m === m && x.y === cur.getFullYear()})) {
+            // 只记录每个月的首次出现
+            months.push({m: m, y: cur.getFullYear(), start: new Date(cur)});
+        }
+        cur.setDate(cur.getDate() + 7);
+    }
+    // 计算月份跨度比例
+    var totalDays = (endSun - startMon) / (1000 * 60 * 60 * 24);
+    monthsEl.innerHTML = '';
+    months.forEach(function(mm, i) {
+        var span = document.createElement('span');
+        var label = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'][mm.m];
+        if (i === 0 || mm.y !== months[i-1].y) label = mm.y + '年' + label;
+        span.textContent = label;
+        // 计算宽度比例
+        var dayOffset = (mm.start - startMon) / (1000 * 60 * 60 * 24);
+        var widthPct = (28 / totalDays) * 100;
+        // 首个月份按实际剩余空间
+        if (i === 0) {
+            span.style.marginLeft = '0';
+        } else {
+            span.style.marginLeft = (dayOffset / totalDays * 100) + '%';
+        }
+        monthsEl.appendChild(span);
+    });
+    
+    /* === 生成热力网格 === */
+    var cellsEl = document.getElementById('hmCells');
+    // 计算总周数
+    var msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    var totalWeeks = Math.ceil((endSun - startMon) / msPerWeek);
+    
+    // 创建7行 x totalWeeks列 的网格
+    var grid = [];
+    for (var r = 0; r < 7; r++) {
+        grid[r] = [];
+        for (var c = 0; c < totalWeeks; c++) {
+            grid[r][c] = null;
+        }
+    }
+    
+    // 填充日期
+    var curDate = new Date(startMon);
+    for (var c = 0; c < totalWeeks; c++) {
+        for (var r = 0; r < 7; r++) {
+            if (curDate > endSun) break;
+            var dateStr = curDate.getFullYear() + '-' + 
+                String(curDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(curDate.getDate()).padStart(2, '0');
+            var count = counts[dateStr] || 0;
+            grid[r][c] = { date: dateStr, count: count };
+            curDate.setDate(curDate.getDate() + 1);
+        }
+    }
+    
+    // 最大计数
+    var maxCount = Math.max.apply(null, Object.values(counts));
+    
+    // 渲染单元格
+    cellsEl.innerHTML = '';
+    for (var c = 0; c < totalWeeks; c++) {
+        for (var r = 0; r < 7; r++) {
+            var cell = document.createElement('div');
+            cell.className = 'hm-cell';
+            if (grid[r][c]) {
+                var level = 0;
+                if (grid[r][c].count > 0) {
+                    level = Math.min(4, Math.ceil(grid[r][c].count / Math.max(1, maxCount) * 4));
+                }
+                cell.classList.add('hm-lv' + level);
+                cell.title = grid[r][c].date + ' · ' + grid[r][c].count + ' 篇文章';
+            } else {
+                cell.classList.add('hm-lv0');
+            }
+            cellsEl.appendChild(cell);
+        }
+    }
+})();
+</script>

@@ -127,6 +127,22 @@ layout: default
 .post-content tr:hover td { background: rgba(59,130,246,0.03); }
 .post-content img { max-width: 100%; border-radius: var(--radius-sm); margin: 32px 0; }
 
+/* === 图片懒加载 === */
+.post-content img[lazy] {
+    filter: blur(20px);
+    opacity: 0.3;
+    transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(59,130,246,0.04);
+    border-radius: var(--radius-sm);
+    transform: scale(0.98);
+}
+.post-content img[lazy].loaded {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+}
+
 /* === Rouge 语法高亮 (深色主题) === */
 .highlight .c  { color: #6b7280; font-style: italic; }  /* 注释 */
 .highlight .k  { color: #f472b6; }  /* 关键字 */
@@ -426,6 +442,40 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inp) inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') unlockPost(); });
 });
 {% endif %}
+/* === 图片懒加载 === */
+(function() {
+    const content = document.getElementById('postContent');
+    if (!content) return;
+    const imgs = content.querySelectorAll('img');
+    if (!imgs.length) return;
+    
+    imgs.forEach(function(img) {
+        var src = img.getAttribute('src');
+        if (!src || src.startsWith('data:')) return;
+        img.setAttribute('lazy', '');
+        img.dataset.src = src;
+        img.removeAttribute('src');
+        
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    img.src = img.dataset.src;
+                    img.onload = function() {
+                        img.classList.add('loaded');
+                        img.removeAttribute('lazy');
+                    };
+                    img.onerror = function() {
+                        img.classList.add('loaded');
+                        img.removeAttribute('lazy');
+                    };
+                    observer.unobserve(img);
+                }
+            });
+        }, { rootMargin: '300px 0px' });
+        observer.observe(img);
+    });
+})();
+
 const progressBar = document.getElementById('readingProgress');
 const postContent = document.getElementById('postContent');
 window.addEventListener('scroll', () => {
