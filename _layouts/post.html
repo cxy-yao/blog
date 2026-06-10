@@ -317,16 +317,17 @@ layout: default
     .password-gate { padding: 60px 24px 40px; }
     .password-card h3 { font-size: 1.1rem; }
 }
+/* === Waline 评论 === */
 /* 隐藏已有评论列表 */
-#tcomment .tk-comments,
-#tcomment .tk-notification,
-#tcomment .tk-pager { display: none !important; }
+#waline .wl-comments,
+#waline .wl-notification,
+#waline .wl-pager { display: none !important; }
 
-/* 隐藏昵称、邮箱、网站输入行（包在 .tk-meta-input 里） */
-#tcomment .tk-meta-input { display: none !important; }
+/* 隐藏昵称、邮箱、网站输入行 */
+#waline .wl-meta-input { display: none !important; }
 
 /* 保留评论内容框和提交按钮 */
-#tcomment .tk-submit { display: block !important; }
+#waline .wl-submit { display: block !important; }
 
 @media (max-width: 768px) {
     .post-title { font-size: clamp(1.6rem, 4vw, 2rem); }
@@ -407,13 +408,13 @@ layout: default
 </article>
 {% if page.password %}</div>{% endif %}
 
-<!-- Twikoo 评论系统（仅评论框） -->
+<!-- Waline 评论系统 -->
 {% if page.password %}
-<div class="twk-container reveal" id="protectedComments" style="display:none">
+<div class="wl-container reveal" id="protectedComments" style="display:none">
 {% else %}
-<div class="twk-container reveal">
+<div class="wl-container reveal">
 {% endif %}
-    <div id="tcomment"></div>
+    <div id="waline"></div>
 </div>
 
 <script>
@@ -569,27 +570,29 @@ window.addEventListener('scroll', () => {
 })();
 </script>
 
-{% if site.twikoo.env_id and site.twikoo.env_id != "" %}
-<!-- Twikoo 评论客户端 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.css">
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js">
+{% if site.waline.server_url and site.waline.server_url != "" %}
+<!-- Waline 评论客户端 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css">
+<script src="https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.js">
 </script>
 <script>
-twikoo.init({
-    envId: '{{ site.twikoo.env_id }}',
-    el: '#tcomment',
+Waline.init({
+    el: '#waline',
+    serverURL: '{{ site.waline.server_url }}',
     path: window.location.pathname,
-    lang: '{{ site.twikoo.lang | default: "zh-CN" }}',
+    lang: '{{ site.waline.lang | default: "zh-CN" }}',
+    locale: {
+        placeholder: '发表评论...',
+        sofa: '来写第一条评论吧',
+        reply: '回复',
+        cancelReply: '取消',
+        confirm: '确定',
+        continue: '继续',
+        nick: '昵称',
+        mail: '邮箱',
+        link: '网址',
+        uploadImage: '上传图片',
+    },
 });
-// Twikoo 渲染完成后自动隐藏昵称/邮箱/网站输入框
-(function() {
-    var timer = setInterval(function() {
-        var meta = document.querySelector('#tcomment .tk-meta-input');
-        if (meta) {
-            meta.style.display = 'none';
-            clearInterval(timer);
-        }
-    }, 200);
-})();
 </script>
 {% endif %}

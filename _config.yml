@@ -27,9 +27,9 @@ exclude:
   - DC/
   - .github/
   - .obsidian/
-# Twikoo 评论配置（Cloudflare Workers 部署）
-twikoo:
-  env_id: "https://twikoo-cloudflare.cxy20.workers.dev"
+# Waline 评论系统（Vercel + PostgreSQL 部署）
+waline:
+  server_url: "https://waline-git-main-cxy-yaos-projects.vercel.app"
   lang: "zh-CN"
 
 plugins:
