@@ -13,6 +13,14 @@
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+/* 自定义光标 — 隐藏系统指针 */
+html { cursor: none !important; }
+a, button, .clickable, [role="button"],
+.search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item,
+.tag-pill, .contact-btn, .back-to-top, .btn-primary, .btn-secondary,
+.read-more, .search-result-item { cursor: none !important; }
+input, select, textarea { cursor: text !important; }
+
 :root {
     --bg-primary: #0a0e1a;
     --bg-secondary: #0f172a;
@@ -287,18 +295,63 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* 自定义鼠标指针 — SVG data URI 方式，可靠无 JS 依赖 */
-html {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='none' stroke='%2306b6d4' stroke-width='1.5' opacity='0.8'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2306b6d4' opacity='0.9'/%3E%3C/svg%3E") 12 12, auto;
+/* === Ghost 光标 === */
+#cursor-dot {
+    position: fixed; pointer-events: none; z-index: 99999;
+    width: 6px; height: 6px;
+    background: #06b6d4;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s ease, height 0.15s ease, background 0.3s ease;
+    will-change: transform, left, top;
 }
-a, button, .clickable, [role="button"],
-.search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item,
-.tag-pill, .contact-btn, .back-to-top, .btn-primary, .btn-secondary,
-.read-more, .search-result-item {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='7' fill='none' stroke='%233b82f6' stroke-width='1.8' opacity='0.8'/%3E%3Ccircle cx='14' cy='14' r='3' fill='%233b82f6' opacity='0.9'/%3E%3C/svg%3E") 14 14, pointer;
+#cursor-ring {
+    position: fixed; pointer-events: none; z-index: 99998;
+    width: 28px; height: 28px;
+    border: 1.5px solid rgba(6, 182, 212, 0.35);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, border-color 0.4s ease, background 0.3s ease;
+    will-change: transform, left, top;
 }
-/* 输入框保持编辑光标 */
-input, select, textarea { cursor: text; }
+/* 悬浮在可点击元素上时 */
+#cursor-dot.hover { width: 10px; height: 10px; }
+#cursor-ring.hover {
+    width: 40px; height: 40px;
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.06);
+}
+/* 点击时 */
+#cursor-dot.click { width: 4px; height: 4px; }
+#cursor-ring.click { width: 18px; height: 18px; border-color: rgba(59, 130, 246, 0.7); }
+/* 隐藏状态 */
+#cursor-dot.hidden, #cursor-ring.hidden { opacity: 0; }
+
+/* 光标轨迹粒子 */
+.cursor-trail {
+    position: fixed; pointer-events: none; border-radius: 50%;
+    z-index: 99997; opacity: 0;
+}
+
+/* 轻提示 — 类似 Element Plus ElMessage */
+#msg-toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    z-index: 999999;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    color: var(--text-secondary);
+    padding: 12px 28px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.9rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+#msg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 @keyframes logo-float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
@@ -328,6 +381,12 @@ input, select, textarea { cursor: text; }
     </style>
 </head>
 <body>
+    <!-- Ghost 光标 -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <!-- 消息轻提示 -->
+    <div id="msg-toast"></div>
+
     <!-- 背景轮播 -->
     <div class="bg-slideshow">
         <div class="bg-slide active" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/1.jpg')"></div>
@@ -474,22 +533,224 @@ input, select, textarea { cursor: text; }
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // === 禁止右键 — 鼠标附近提示（边界保护） ===
+    // === 轻提示（类 Element Plus ElMessage） ===
+    function showMsg(msg, duration) {
+        var el = document.getElementById('msg-toast');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.remove('show');
+        void el.offsetWidth; // reflow
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(function() { el.classList.remove('show'); }, duration || 2000);
+    }
+
+    // === 禁止右键 — 轻提示（仿 home 项目） ===
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-        var toast = document.createElement('div');
-        toast.textContent = '📖 为了阅读体验，本站已禁用右键';
-        // 计算位置（防止超出右/上边界）
-        var x = Math.min(e.clientX + 16, window.innerWidth - 200);
-        var y = Math.max(e.clientY - 50, 10);
-        toast.style.cssText = 'position:fixed;top:' + y + 'px;left:' + x + 'px;background:rgba(15,23,42,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text-secondary);padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);font-size:0.85rem;z-index:99999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.25s ease';
-        document.body.appendChild(toast);
-        requestAnimationFrame(function() { toast.style.opacity = '1'; });
-        setTimeout(function() {
-            toast.style.opacity = '0';
-            setTimeout(function() { toast.remove(); }, 300);
-        }, 1800);
+        showMsg('📖 为了浏览体验，本站已禁用右键');
     });
+
+    // === Ghost 光标（home 项目风格 × 滚动进度变色 + 轨迹尾巴） ===
+    (function cursorGhost() {
+        var dot = document.getElementById('cursor-dot');
+        var ring = document.getElementById('cursor-ring');
+        if (!dot || !ring) return;
+
+        var curr = { x: 0, y: 0 };
+        var prev = { x: 0, y: 0 };
+        var hidden = true;
+        var isHovering = false;
+        var trailTimer = 0;
+
+        // 检测可点击元素
+        var clickableSelector = 'a, button, .clickable, [role="button"], .search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item, .tag-pill, .back-to-top, .search-result-item, .read-more, .btn-primary, .btn-secondary';
+
+        // Lerp 插值（缓动跟随）
+        function lerp(a, b, t) {
+            if (Math.abs(a - b) < 0.01) return b;
+            return a + (b - a) * t;
+        }
+
+        // 根据滚动进度计算颜色和大小
+        function getScrollState() {
+            var doc = document.documentElement;
+            var scrollTop = window.scrollY || window.pageYOffset || 0;
+            var scrollH = doc.scrollHeight - window.innerHeight;
+            var progress = scrollH > 0 ? Math.min(Math.max(scrollTop / scrollH, 0), 1) : 0;
+
+            // 近顶部/底部 → 微缩指示器
+            var nearEdge = progress < 0.05 || progress > 0.95;
+
+            // 颜色映射：浅青(0%) → 蓝(50%) → 紫(100%)
+            var r, g, bCol;
+            if (progress < 0.5) {
+                var t = progress / 0.5;
+                r = Math.round(6 + (59 - 6) * t);     // 6→59
+                g = Math.round(182 + (130 - 182) * t); // 182→130
+                bCol = Math.round(212 + (246 - 212) * t); // 212→246
+            } else {
+                var t = (progress - 0.5) / 0.5;
+                r = Math.round(59 + (139 - 59) * t);   // 59→139
+                g = Math.round(130 + (92 - 130) * t);  // 130→92
+                bCol = Math.round(246 + (246 - 246) * t); // 246→246
+            }
+
+            var color = 'rgb(' + r + ',' + g + ',' + bCol + ')';
+            var colorAlpha = 'rgba(' + r + ',' + g + ',' + bCol + ',';
+
+            // 尺寸：近边缘缩小为进度指示器
+            var dotSize, ringSize;
+            if (nearEdge) {
+                // 微缩指示器
+                var edgeFactor = progress < 0.05
+                    ? (progress / 0.05)  // 顶部：从0到1
+                    : ((1 - progress) / 0.05); // 底部：从1到0
+                edgeFactor = Math.max(0.1, edgeFactor);
+                dotSize = 3 + edgeFactor * 3;
+                ringSize = 10 + edgeFactor * 18;
+            } else {
+                dotSize = 6;
+                ringSize = 28;
+            }
+
+            return { color: color, colorAlpha: colorAlpha, dotSize: dotSize, ringSize: ringSize, progress: progress };
+        }
+
+        // 创建轨迹粒子
+        function spawnTrail(x, y, color, dotSize) {
+            var trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            var size = Math.max(2, dotSize * 0.6);
+            trail.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';opacity:0.3';
+            document.body.appendChild(trail);
+            // 渐隐 + 移除
+            setTimeout(function() {
+                trail.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                trail.style.opacity = '0';
+                trail.style.transform = 'scale(0.3)';
+                setTimeout(function() { if (trail.parentNode) trail.remove(); }, 700);
+            }, 50);
+        }
+
+        // 更新光标
+        function updateCursor() {
+            var state = getScrollState();
+
+            // 隐藏状态
+            if (hidden) {
+                dot.classList.add('hidden');
+                ring.classList.add('hidden');
+            } else {
+                dot.classList.remove('hidden');
+                ring.classList.remove('hidden');
+            }
+
+            // Hover/Click 状态会覆盖颜色/大小
+            if (!isHovering && !hidden) {
+                // 大小
+                dot.style.width = state.dotSize + 'px';
+                dot.style.height = state.dotSize + 'px';
+                ring.style.width = state.ringSize + 'px';
+                ring.style.height = state.ringSize + 'px';
+                // 颜色
+                dot.style.background = state.color;
+                ring.style.borderColor = state.colorAlpha + '0.35)';
+            }
+
+            // Lerp 跟随（环）
+            prev.x = lerp(prev.x, curr.x, 0.18);
+            prev.y = lerp(prev.y, curr.y, 0.18);
+
+            dot.style.left = curr.x + 'px';
+            dot.style.top = curr.y + 'px';
+            ring.style.left = prev.x + 'px';
+            ring.style.top = prev.y + 'px';
+
+            // 轨迹尾巴 — 每 60ms 产生一个
+            trailTimer++;
+            if (trailTimer % 3 === 0 && !hidden) {
+                spawnTrail(curr.x, curr.y, state.color, state.dotSize);
+            }
+
+            // 限制 trail 数量
+            var trails = document.querySelectorAll('.cursor-trail');
+            if (trails.length > 20) {
+                for (var i = 0; i < trails.length - 20; i++) {
+                    if (trails[i].parentNode) trails[i].remove();
+                }
+            }
+        }
+
+        // 鼠标移动
+        document.addEventListener('mousemove', function(e) {
+            if (hidden) {
+                hidden = false;
+                curr.x = e.clientX;
+                curr.y = e.clientY;
+                prev.x = e.clientX;
+                prev.y = e.clientY;
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+                ring.style.left = e.clientX + 'px';
+                ring.style.top = e.clientY + 'px';
+                updateCursor();
+                return;
+            }
+            curr.x = e.clientX;
+            curr.y = e.clientY;
+
+            // 检测是否悬停在可点击元素上
+            var target = e.target;
+            isHovering = target.matches && target.matches(clickableSelector);
+            dot.classList.toggle('hover', isHovering);
+            ring.classList.toggle('hover', isHovering);
+        });
+
+        // 鼠标离开/进入页面
+        document.addEventListener('mouseleave', function() {
+            hidden = true;
+            dot.classList.add('hidden');
+            ring.classList.add('hidden');
+        });
+        document.addEventListener('mouseenter', function() {
+            hidden = false;
+            dot.classList.remove('hidden');
+            ring.classList.remove('hidden');
+        });
+
+        // 点击效果
+        document.addEventListener('mousedown', function() {
+            dot.classList.add('click');
+            ring.classList.add('click');
+        });
+        document.addEventListener('mouseup', function() {
+            dot.classList.remove('click');
+            ring.classList.remove('click');
+        });
+
+        // 滚动时更新
+        window.addEventListener('scroll', function() {
+            updateCursor();
+        });
+
+        // 渲染循环（保持 lerp 持续运行）
+        function render() {
+            updateCursor();
+            requestAnimationFrame(render);
+        }
+        render();
+
+        // 限制 trail 粒子总数
+        setInterval(function() {
+            var trails = document.querySelectorAll('.cursor-trail');
+            if (trails.length > 30) {
+                for (var i = 0; i < trails.length - 30; i++) {
+                    if (trails[i].parentNode) trails[i].remove();
+                }
+            }
+        }, 5000);
+    })();
 
     // === 搜索功能 ===
     (function() {
