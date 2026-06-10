@@ -340,11 +340,11 @@ body {
     background: rgba(15, 23, 42, 0.92);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     color: var(--text-secondary);
-    padding: 12px 28px;
-    border-radius: 12px;
+    padding: 8px 20px;
+    border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.08);
-    font-size: 0.9rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    font-size: 0.8rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
@@ -548,7 +548,7 @@ body {
     // === 禁止右键 — 轻提示（仿 home 项目） ===
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-        showMsg('📖 为了浏览体验，本站已禁用右键');
+        showMsg('为了浏览体验，本站已禁用右键');
     });
 
     // === Ghost 光标（home 项目风格 × 滚动进度变色 + 轨迹尾巴） ===
