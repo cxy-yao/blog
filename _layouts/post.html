@@ -220,6 +220,17 @@ layout: default
 .author-links a:hover { background: rgba(59,130,246,0.1); color: var(--accent-blue); border-color: rgba(59,130,246,0.2); }
 
 @media (max-width: 1600px) { .toc-panel { display: none; } }
+
+/* === Twikoo 评论 === */
+.twk-container {
+    max-width: 800px; margin: 0 auto 80px; padding: 0 20px;
+}
+.comment-title {
+    font-size: 1.5rem; font-weight: 700; margin-bottom: 32px;
+    text-align: center; color: var(--text-primary);
+}
+.comment-title i { margin-right: 10px; color: var(--accent-blue); }
+
 @media (max-width: 768px) {
     .post-title { font-size: clamp(1.6rem, 4vw, 2rem); }
     .post-meta { flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -280,6 +291,12 @@ layout: default
         <a href="{{ site.baseurl }}/" class="back-link"><i class="fas fa-arrow-left"></i> 返回文章列表</a>
     </footer>
 </article>
+
+<!-- Twikoo 评论系统 -->
+<div class="twk-container reveal">
+    <h2 class="section-title comment-title"><i class="far fa-comment-dots"></i> 评论</h2>
+    <div id="tcomment"></div>
+</div>
 
 <script>
 const progressBar = document.getElementById('readingProgress');
@@ -374,3 +391,18 @@ window.addEventListener('scroll', () => {
     });
 })();
 </script>
+
+{% if site.twikoo.env_id and site.twikoo.env_id != "" %}
+<!-- Twikoo 评论客户端 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.css">
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js">
+</script>
+<script>
+twikoo.init({
+    envId: '{{ site.twikoo.env_id }}',
+    el: '#tcomment',
+    path: window.location.pathname,
+    lang: '{{ site.twikoo.lang | default: "zh-CN" }}',
+});
+</script>
+{% endif %}
