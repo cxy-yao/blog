@@ -335,7 +335,7 @@ body {
 
 /* 轻提示 — 类似 Element Plus ElMessage */
 #msg-toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    position: fixed; top: var(--nav-height); left: 50%; transform: translateX(-50%) translateY(-12px);
     z-index: 999999;
     background: rgba(15, 23, 42, 0.92);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -350,7 +350,7 @@ body {
     pointer-events: none;
     white-space: nowrap;
 }
-#msg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#msg-toast.show { opacity: 1; transform: translateX(-50%) translateY(8px); }
 
 @keyframes logo-float {
     0%, 100% { transform: translateY(0); }
