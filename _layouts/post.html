@@ -301,22 +301,16 @@ layout: default
     .password-gate { padding: 60px 24px 40px; }
     .password-card h3 { font-size: 1.1rem; }
 }
-/* 只显示评论输入框，隐藏已有评论列表、标题等全部其他内容 */
+/* 隐藏已有评论列表 */
 #tcomment .tk-comments,
 #tcomment .tk-notification,
 #tcomment .tk-pager { display: none !important; }
-#tcomment .twikoo {
-    display: flex; flex-direction: column;
-}
-/* 昵称、邮箱、网站输入框都没了，只留下文字块和提交按钮 */
-#tcomment .tk-editor .tk-input:not(.tk-content) { display: none !important; }
 
-/* 隐藏邮箱订阅、表情包等小提示 */
-#tcomment .tk-editor .tk-extra,
-#tcomment .tk-editor .tk-hint { display: none !important; }
+/* 隐藏昵称、邮箱、网站输入行（包在 .tk-meta-input 里） */
+#tcomment .tk-meta-input { display: none !important; }
 
-/* 只保留编辑器的可见性 */
-#tcomment .tk-editor { display: block !important; }
+/* 保留评论内容框和提交按钮 */
+#tcomment .tk-submit { display: block !important; }
 
 @media (max-width: 768px) {
     .post-title { font-size: clamp(1.6rem, 4vw, 2rem); }
