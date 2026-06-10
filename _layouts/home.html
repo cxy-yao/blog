@@ -1,0 +1,351 @@
+---
+layout: default
+---
+
+<style>
+.hero {
+    text-align: center; padding: 100px 0 120px; position: relative;
+    min-height: 70vh; display: flex; align-items: center; justify-content: center;
+}
+.hero-bg-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 800px; height: 800px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.06) 40%, transparent 70%);
+    animation: hero-pulse 8s ease-in-out infinite alternate;
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; }
+.hero-badge {
+    display: inline-block; padding: 12px 28px; border-radius: 28px;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);
+    color: var(--accent-blue); font-size: 0.92rem; font-weight: 500;
+    margin-bottom: 36px; backdrop-filter: blur(10px);
+}
+.hero-title {
+    font-size: clamp(2.8rem, 7vw, 4.5rem); font-weight: 900; line-height: 1.1;
+    margin-bottom: 28px;
+}
+.hero-title-line {
+    display: block;
+    color: var(--text-primary);
+    text-shadow: 0 0 40px rgba(59,130,246,0.3), 0 0 80px rgba(59,130,246,0.15);
+}
+.hero-title-sub {
+    display: block; font-size: clamp(1.6rem, 4vw, 3rem); font-weight: 300;
+    color: var(--text-secondary); margin-top: 8px;
+}
+.hero-typing {
+    font-family: var(--font-mono); font-size: clamp(1rem, 1.4vw, 1.2rem); color: var(--accent-cyan);
+    margin-bottom: 28px; height: 2em; display: flex; align-items: center; justify-content: center;
+}
+.typing-cursor { animation: blink 1s step-end infinite; margin-left: 2px; color: var(--accent-cyan); }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.hero-desc {
+    color: var(--text-secondary); font-size: clamp(1rem, 1.5vw, 1.15rem); line-height: 1.9;
+    margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto;
+}
+.hero-stats {
+    display: flex; align-items: center; justify-content: center; gap: clamp(32px, 5vw, 64px);
+    margin-bottom: 56px;
+}
+.stat-item { text-align: center; min-width: 100px; }
+.stat-num {
+    display: block; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+    background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 6px;
+}
+.stat-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+.stat-divider { width: 1px; height: 48px; background: var(--glass-border); }
+.hero-actions { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.btn-primary, .btn-secondary {
+    display: inline-flex; align-items: center; gap: 12px; padding: 16px 36px;
+    border-radius: var(--radius-sm); font-weight: 600; font-size: 1rem;
+    text-decoration: none; transition: var(--transition);
+}
+.btn-primary {
+    background: var(--gradient-main); color: #fff;
+    box-shadow: 0 4px 28px rgba(59,130,246,0.35);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(59,130,246,0.45); }
+.btn-secondary {
+    background: rgba(255,255,255,0.05); color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+}
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.08); border-color: rgba(59,130,246,0.25);
+    transform: translateY(-3px);
+}
+@keyframes hero-pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+.categories-section { padding: 60px 0; }
+.categories-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin-bottom: 60px;
+}
+.category-card {
+    background: var(--bg-card); border-radius: var(--radius);
+    padding: 24px; border: 1px solid var(--glass-border);
+    text-align: center; transition: var(--transition);
+    cursor: pointer; text-decoration: none; display: block;
+    color: var(--text-primary);
+}
+.category-card:hover {
+    transform: translateY(-6px); border-color: rgba(59,130,246,0.2);
+    background: var(--bg-card-hover);
+}
+.category-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--gradient-main); display: flex;
+    align-items: center; justify-content: center; margin: 0 auto 16px;
+    font-size: 1.5rem;
+}
+.category-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); }
+.category-count { font-size: 0.85rem; color: var(--text-secondary); }
+
+.posts-section { padding: 40px 0; }
+.posts-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 28px; margin-bottom: 60px;
+}
+.post-card {
+    background: var(--bg-card); border-radius: var(--radius);
+    padding: 32px; border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px); transition: var(--transition);
+    position: relative; overflow: hidden;
+}
+.post-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--gradient-main); opacity: 0; transition: var(--transition);
+}
+.post-card:hover {
+    transform: translateY(-8px); border-color: rgba(59,130,246,0.2);
+    background: var(--bg-card-hover);
+}
+.post-card:hover::before { opacity: 1; }
+.post-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px; font-size: 0.85rem; color: var(--text-muted);
+}
+.post-card-category {
+    padding: 5px 16px; border-radius: 20px; font-size: 0.72rem;
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.cat-network { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+.cat-datacenter { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+.cat-linux { background: rgba(16,185,129,0.15); color: var(--accent-emerald); }
+.cat-routing { background: rgba(6,182,212,0.15); color: var(--accent-cyan); }
+.cat-default { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+.post-card-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 14px; line-height: 1.45; }
+.post-card-title a { color: var(--text-primary); text-decoration: none; transition: var(--transition-fast); }
+.post-card-title a:hover { color: var(--accent-blue); }
+.post-card-excerpt { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.75; margin-bottom: 20px; }
+.post-card-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.tag-pill {
+    font-size: 0.74rem; color: var(--accent-cyan); background: rgba(6,182,212,0.08);
+    padding: 5px 14px; border-radius: 20px; font-weight: 500;
+    border: 1px solid rgba(6,182,212,0.15);
+}
+.read-more {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 0.92rem; font-weight: 600; color: var(--accent-blue);
+    text-decoration: none; margin-top: auto;
+}
+.read-more:hover { color: var(--accent-cyan); gap: 14px; }
+
+.tags-section { padding: 60px 0; }
+.tags-cloud {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+}
+.tag-cloud-item {
+    padding: 10px 24px; border-radius: 28px; font-size: 0.92rem;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+    color: var(--text-secondary); transition: var(--transition-fast);
+    text-decoration: none;
+}
+.tag-cloud-item:hover {
+    background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.25);
+    color: var(--accent-blue); transform: translateY(-2px);
+}
+.tag-cloud-item.hot {
+    background: rgba(236,72,153,0.1); border-color: rgba(236,72,153,0.2);
+    color: var(--accent-pink);
+}
+.tag-cloud-item.hot:hover { background: rgba(236,72,153,0.15); }
+
+.featured-section { padding: 60px 0; }
+.featured-card {
+    background: var(--bg-card); border-radius: var(--radius-lg);
+    padding: 48px; border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px);
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px;
+    align-items: center;
+}
+.featured-content h3 {
+    font-size: 1.8rem; font-weight: 700; margin-bottom: 16px;
+}
+.featured-content p { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; margin-bottom: 24px; }
+.featured-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+.featured-image {
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.featured-image img { width: 100%; height: 200px; object-fit: cover; }
+
+@media (max-width: 900px) {
+    .featured-card { grid-template-columns: 1fr; text-align: center; }
+    .featured-tags { justify-content: center; }
+}
+@media (max-width: 768px) {
+    .hero { padding: 60px 0 80px; min-height: auto; }
+    .hero-title { font-size: 2.6rem; }
+    .hero-title-sub { font-size: 1.6rem; }
+    .hero-stats { gap: 24px; }
+    .stat-num { font-size: 1.8rem; }
+    .hero-actions { flex-direction: column; align-items: center; width: 100%; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    .posts-grid { grid-template-columns: 1fr; }
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<section class="hero">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+        <div class="hero-badge">🧑‍💻 Network Engineer & Tech Writer</div>
+        <h1 class="hero-title">
+            <span class="hero-title-line">ChenChuLin</span>
+            <span class="hero-title-sub">的技术博客</span>
+        </h1>
+        <div class="hero-typing">
+            <span class="typing-text" id="typingText"></span>
+            <span class="typing-cursor">|</span>
+        </div>
+        <p class="hero-desc">记录数据中心网络、AI算力架构、路由交换与Linux运维的技术笔记，分享NetDevOps实践经验</p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-num">{{ site.posts.size }}</span>
+                <span class="stat-label">篇文章</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">{{ site.categories.size }}</span>
+                <span class="stat-label">个分类</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">{{ site.tags.size }}</span>
+                <span class="stat-label">个标签</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">5+</span>
+                <span class="stat-label">年经验</span>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a href="#posts" class="btn-primary"><i class="fas fa-arrow-down"></i> 浏览文章</a>
+            <a href="{{ site.baseurl }}/about/" class="btn-secondary"><i class="fas fa-user"></i> 关于我</a>
+        </div>
+    </div>
+</section>
+
+<section class="categories-section" id="categories">
+    <h2 class="section-title"><i class="fas fa-folder-open"></i> 文章分类</h2>
+    <div class="categories-grid">
+        {% for category in site.categories %}
+        {% assign cat_name = category[0] %}
+        {% assign cat_posts = category[1] %}
+        <a href="{{ site.baseurl }}/categories/#{{ cat_name }}" class="category-card">
+            <div class="category-icon">
+                {% if cat_name == '网络工程' %}<i class="fas fa-network-wired"></i>
+                {% elsif cat_name == '数据中心' %}<i class="fas fa-server"></i>
+                {% elsif cat_name == 'Linux' %}<i class="fab fa-linux"></i>
+                {% elsif cat_name == '路由交换' %}<i class="fas fa-route"></i>
+                {% else %}<i class="fas fa-file-alt"></i>{% endif %}
+            </div>
+            <div class="category-name">{{ cat_name }}</div>
+            <div class="category-count">{{ cat_posts.size }} 篇文章</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+{% if site.posts.size > 0 %}
+<section class="posts-section" id="posts">
+    <h2 class="section-title"><i class="fas fa-fire"></i> 最新文章</h2>
+    <div class="posts-grid">
+        {% for post in site.posts limit:6 %}
+        <article class="post-card reveal">
+            <div class="post-card-header">
+                <time><i class="far fa-calendar-alt"></i> {{ post.date | date: "%Y-%m-%d" }}</time>
+                {% if post.categories.size > 0 %}
+                {% assign cat = post.categories | first %}
+                <span class="post-card-category {% if cat == '网络工程' %}cat-network{% elsif cat == '数据中心' %}cat-datacenter{% elsif cat == 'Linux' %}cat-linux{% elsif cat == '路由交换' %}cat-routing{% else %}cat-default{% endif %}">{{ cat }}</span>
+                {% endif %}
+            </div>
+            <h3 class="post-card-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+            <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncatewords: 45 }}</p>
+            {% if post.tags.size > 0 %}
+            <div class="post-card-tags">
+                {% for tag in post.tags limit:4 %}
+                <span class="tag-pill">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <a href="{{ post.url }}" class="read-more">阅读全文 <span class="arrow">→</span></a>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="tags-section">
+    <h2 class="section-title"><i class="fas fa-tags"></i> 热门标签</h2>
+    <div class="tags-cloud">
+        {% for tag in site.tags %}
+        {% assign tag_name = tag[0] %}
+        {% assign tag_count = tag[1].size %}
+        <a href="{{ site.baseurl }}/tags/#{{ tag_name }}" 
+           class="tag-cloud-item {% if tag_count >= 3 %}hot{% endif %}">
+            {{ tag_name }} ({{ tag_count }})
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+(function() {
+    const texts = [
+        'Spine-Leaf架构设计 🌐',
+        'VXLAN EVPN实战配置 ⚡',
+        'BGP/OSPF协议深度解析 📡',
+        'AI算力网络组网 🤖',
+        '华为CE交换机运维 🔧',
+        '网络故障排查方法论 🛠️',
+        'WSL2效率工具箱 🐧',
+        'Python网络自动化 🐍'
+    ];
+    const el = document.getElementById('typingText');
+    let textIdx = 0, charIdx = 0, isDeleting = false, delay = 100;
+
+    function type() {
+        const current = texts[textIdx];
+        if (isDeleting) {
+            el.textContent = current.substring(0, charIdx - 1);
+            charIdx--; delay = 40;
+        } else {
+            el.textContent = current.substring(0, charIdx + 1);
+            charIdx++; delay = 80 + Math.random() * 60;
+        }
+        if (!isDeleting && charIdx === current.length) {
+            delay = 2500; isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false; textIdx = (textIdx + 1) % texts.length; delay = 400;
+        }
+        setTimeout(type, delay);
+    }
+    setTimeout(type, 800);
+})();
+</script>

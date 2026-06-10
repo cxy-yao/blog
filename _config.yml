@@ -1,0 +1,32 @@
+title: ChenChuLin的博客
+description: 网络工程师的技术笔记 — 数据中心、AI算力网络、路由交换、Linux运维
+author: ChenChuLin
+url: "https://blog.chulinchen.top"
+baseurl: ""
+lang: zh-CN
+
+# 社交链接
+github_username: cxy-yao
+github_url: "https://github.com/cxy-yao"
+email: "chenchulin@example.com"
+
+# 构建设置
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
+excerpt_separator: <!--more-->
+
+# 导航菜单
+header_pages:
+  - about.md
+  - categories.md
+  - tags.md
+
+# 分页
+exclude:
+  - DC/
+  - .github/
+  - .obsidian/
+plugins:
+  - jekyll-paginate
+paginate: 10
+paginate_path: "/page:num/"
