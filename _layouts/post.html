@@ -308,6 +308,13 @@ layout: default
 #tcomment .twikoo {
     display: flex; flex-direction: column;
 }
+/* 昵称、邮箱、网站输入框都没了，只留下文字块和提交按钮 */
+#tcomment .tk-editor .tk-input:not(.tk-content) { display: none !important; }
+
+/* 隐藏邮箱订阅、表情包等小提示 */
+#tcomment .tk-editor .tk-extra,
+#tcomment .tk-editor .tk-hint { display: none !important; }
+
 /* 只保留编辑器的可见性 */
 #tcomment .tk-editor { display: block !important; }
 
