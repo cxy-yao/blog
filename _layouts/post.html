@@ -221,15 +221,19 @@ layout: default
 
 @media (max-width: 1600px) { .toc-panel { display: none; } }
 
-/* === Twikoo 评论 === */
+/* === Twikoo 评论（仅评论框） === */
 .twk-container {
     max-width: 800px; margin: 0 auto 80px; padding: 0 20px;
 }
-.comment-title {
-    font-size: 1.5rem; font-weight: 700; margin-bottom: 32px;
-    text-align: center; color: var(--text-primary);
+/* 只显示评论输入框，隐藏已有评论列表、标题等全部其他内容 */
+#tcomment .tk-comments,
+#tcomment .tk-notification,
+#tcomment .tk-pager { display: none !important; }
+#tcomment .twikoo {
+    display: flex; flex-direction: column;
 }
-.comment-title i { margin-right: 10px; color: var(--accent-blue); }
+/* 只保留编辑器的可见性 */
+#tcomment .tk-editor { display: block !important; }
 
 @media (max-width: 768px) {
     .post-title { font-size: clamp(1.6rem, 4vw, 2rem); }
@@ -292,9 +296,8 @@ layout: default
     </footer>
 </article>
 
-<!-- Twikoo 评论系统 -->
+<!-- Twikoo 评论系统（仅评论框） -->
 <div class="twk-container reveal">
-    <h2 class="section-title comment-title"><i class="far fa-comment-dots"></i> 评论</h2>
     <div id="tcomment"></div>
 </div>
 
