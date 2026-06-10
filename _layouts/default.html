@@ -1,662 +1,593 @@
-     1|<!DOCTYPE html>
-     2|<html lang="zh-CN">
-     3|<head>
-     4|    <meta charset="UTF-8">
-     5|    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     6|    <title>{{ page.title | default: site.title }}</title>
-     7|    <meta name="description" content="{{ page.description | default: site.description }}">
-     8|    <meta name="author" content="{{ site.author }}">
-     9|
-    10|    <meta name="theme-color" content="#0f172a">
-    11|    <link rel="preconnect" href="https://fonts.loli.net">
-    12|    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    13|    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    14|    <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    15|    <style>
-    16|:root {
-    17|    --bg-primary: #0a0e1a;
-    18|    --bg-secondary: #0f172a;
-    19|    --bg-card: rgba(15, 23, 42, 0.6);
-    20|    --bg-card-hover: rgba(30, 41, 59, 0.8);
-    21|    --glass: rgba(255, 255, 255, 0.03);
-    22|    --glass-border: rgba(255, 255, 255, 0.06);
-    23|    --text-primary: #f1f5f9;
-    24|    --text-secondary: #94a3b8;
-    25|    --text-muted: #475569;
-    26|    --accent-blue: #3b82f6;
-    27|    --accent-cyan: #06b6d4;
-    28|    --accent-purple: #8b5cf6;
-    29|    --accent-pink: #ec4899;
-    30|    --accent-emerald: #10b981;
-    31|    --accent-amber: #f59e0b;
-    32|    --gradient-main: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    33|    --gradient-cool: linear-gradient(135deg, #06b6d4, #3b82f6);
-    34|    --gradient-warm: linear-gradient(135deg, #f59e0b, #ec4899);
-    35|    --radius: 16px;
-    36|    --radius-sm: 10px;
-    37|    --radius-lg: 24px;
-    38|    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
-    39|    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
-    40|    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    41|    --transition-fast: all 0.2s ease;
-    42|    --font-sans: 'Noto Sans SC', 'Inter', -apple-system, sans-serif;
-    43|    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    44|    --nav-height: 72px;
-    45|}
-    46|
-    47|*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    48|
-    49|/* === 背景轮播 === */
-    50|.bg-slideshow {
-    51|    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
-    52|    overflow: hidden;
-    53|}
-    54|.bg-slide {
-    55|    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    56|    background-size: cover; background-position: center;
-    57|    opacity: 0; transition: opacity 1.5s ease-in-out;
-    58|}
-    59|.bg-slide.active { opacity: 1; }
-    60|.bg-slide::after {
-    61|    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    62|    background: rgba(10, 14, 26, 0.55);
-    63|}
-    64|
-    65|html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.3) transparent; }
-    66|::-webkit-scrollbar { width: 6px; }
-    67|::-webkit-scrollbar-track { background: transparent; }
-    68|::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 3px; }
-    69|::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.5); }
-    70|::selection { background: rgba(59,130,246,0.3); color: #fff; }
-    71|
-    72|body {
-    73|    font-family: var(--font-sans);
-    74|    background: var(--bg-primary);
-    75|    color: var(--text-primary);
-    76|    line-height: 1.8;
-    77|    min-height: 100vh;
-    78|    overflow-x: hidden;
-    79|    -webkit-font-smoothing: antialiased;
-    80|}
-    81|
-    82|#particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-    83|.bg-gradient-overlay {
-    84|    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
-    85|    background:
-    86|        radial-gradient(ellipse 600px 400px at 20% 20%, rgba(59,130,246,0.08), transparent),
-    87|        radial-gradient(ellipse 500px 500px at 80% 80%, rgba(139,92,246,0.06), transparent),
-    88|        radial-gradient(ellipse 400px 300px at 50% 50%, rgba(6,182,212,0.04), transparent);
-    89|}
-    90|
-    91|.navbar {
-    92|    position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); z-index: 1000;
-    93|    background: transparent; border-bottom: 1px solid transparent;
-    94|    transition: all 0.4s ease;
-    95|}
-    96|.navbar.scrolled { background: rgba(10, 14, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); }
-    97|.navbar .container { max-width: 1400px; margin: 0 auto; padding: 0 clamp(24px, 4vw, 60px); height: 100%; display: flex; justify-content: space-between; align-items: center; }
-    98|.logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-primary); transition: var(--transition-fast); }
-    99|.logo:hover { transform: scale(1.03); }
-   100|.logo-icon {
-   101|    width: 40px; height: 40px; border-radius: 12px; background: var(--gradient-main);
-   102|    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-   103|    box-shadow: 0 0 20px rgba(59,130,246,0.3);
-   104|}
-   105|.logo-text {
-   106|    font-size: 1.5rem; font-weight: 700;
-   107|    background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-   108|    background-clip: text;
-   109|}
-   110|.nav-links { display: flex; gap: 4px; }
-   111|.nav-link {
-   112|    color: var(--text-secondary); text-decoration: none;
-   113|    padding: 10px 18px; border-radius: var(--radius-sm);
-   114|    font-size: 0.92rem; font-weight: 500; position: relative;
-   115|    transition: var(--transition-fast);
-   116|}
-   117|.nav-link::after {
-   118|    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-   119|    width: 0; height: 2px; background: var(--gradient-main); border-radius: 1px;
-   120|    transition: width 0.3s ease;
-   121|}
-   122|.nav-link:hover, .nav-link.active { color: var(--text-primary); background: rgba(255,255,255,0.08); }
-   123|.nav-link:hover::after, .nav-link.active::after { width: 24px; }
-   124|.nav-link i { margin-right: 6px; }
-   125|.mobile-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.3rem; cursor: pointer; padding: 8px; }
-   126|.search-btn {
-   127|    display: flex; align-items: center; justify-content: center;
-   128|    width: 40px; height: 40px; border-radius: var(--radius-sm);
-   129|    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-   130|    color: var(--text-secondary); cursor: pointer; transition: var(--transition-fast);
-   131|}
-   132|.search-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
-   133|
-   134|/* 搜索弹窗 */
-   135|.search-overlay {
-   136|    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-   137|    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-   138|    z-index: 9999; display: none;
-   139|    align-items: flex-start; justify-content: center;
-   140|    padding-top: 12vh;
-   141|}
-   142|.search-overlay.active { display: flex; }
-   143|.search-modal {
-   144|    width: min(680px, 90vw);
-   145|    background: var(--bg-card);
-   146|    border: 1px solid var(--glass-border);
-   147|    border-radius: var(--radius-lg);
-   148|    overflow: hidden;
-   149|    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-   150|    animation: search-slide-in 0.25s ease-out;
-   151|}
-   152|@keyframes search-slide-in {
-   153|    from { opacity: 0; transform: translateY(-24px) scale(0.96); }
-   154|    to { opacity: 1; transform: translateY(0) scale(1); }
-   155|}
-   156|.search-header {
-   157|    display: flex; align-items: center; gap: 16px;
-   158|    padding: 20px 24px;
-   159|    border-bottom: 1px solid var(--glass-border);
-   160|}
-   161|.search-header i { color: var(--text-muted); font-size: 1.1rem; }
-   162|.search-input {
-   163|    flex: 1; background: none; border: none; outline: none;
-   164|    color: var(--text-primary); font-size: 1.1rem;
-   165|    font-family: var(--font-sans);
-   166|}
-   167|.search-input::placeholder { color: var(--text-muted); }
-   168|.search-close {
-   169|    background: none; border: none; color: var(--text-muted);
-   170|    font-size: 1.2rem; cursor: pointer; padding: 8px;
-   171|    transition: var(--transition-fast);
-   172|}
-   173|.search-close:hover { color: var(--text-primary); transform: rotate(90deg); }
-   174|.search-results {
-   175|    max-height: 50vh; overflow-y: auto; padding: 8px;
-   176|}
-   177|.search-hint {
-   178|    text-align: center; padding: 40px 20px;
-   179|    color: var(--text-muted); font-size: 0.95rem;
-   180|}
-   181|.search-result-item {
-   182|    display: flex; flex-direction: column; gap: 6px;
-   183|    padding: 16px 20px; border-radius: var(--radius-sm);
-   184|    transition: var(--transition-fast);
-   185|    text-decoration: none !important;
-   186|}
-   187|.search-result-item:hover { background: rgba(255,255,255,0.04); }
-   188|.search-result-title {
-   189|    font-size: 1rem; font-weight: 600;
-   190|    color: var(--text-primary);
-   191|}
-   192|.search-result-title em { color: var(--accent-blue); font-style: normal; }
-   193|.search-result-meta {
-   194|    font-size: 0.82rem; color: var(--text-muted);
-   195|    display: flex; gap: 12px; align-items: center;
-   196|}
-   197|.search-result-meta .tag { color: var(--accent-cyan); }
-   198|.search-result-excerpt {
-   199|    font-size: 0.88rem; color: var(--text-secondary);
-   200|    line-height: 1.5;
-   201|}
-   202|.search-result-excerpt em { color: var(--accent-blue); font-style: normal; }
-   203|.search-results::-webkit-scrollbar { width: 4px; }
-   204|.search-results::-webkit-scrollbar-track { background: transparent; }
-   205|.search-results::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
-   206|
-   207|.main-content {
-   208|    position: relative; z-index: 1;
-   209|    min-height: calc(100vh - var(--nav-height) - 160px);
-   210|    padding: calc(var(--nav-height) + 40px) 0 60px;
-   211|}
-   212|.container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
-   213|
-   214|.section-title {
-   215|    font-size: 1.5rem; font-weight: 700; margin-bottom: 36px;
-   216|    display: flex; align-items: center; gap: 14px; padding-left: 20px; position: relative;
-   217|}
-   218|.section-title::before {
-   219|    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-   220|    width: 4px; height: 28px; border-radius: 2px; background: var(--gradient-main);
-   221|    box-shadow: 0 0 12px rgba(59,130,246,0.4);
-   222|}
-   223|.section-title i { color: var(--accent-cyan); font-size: 1.2rem; }
-   224|
-   225|.footer {
-   226|    position: relative; z-index: 1; margin-top: 80px;
-   227|    background: transparent;
-   228|    backdrop-filter: blur(16px);
-   229|    -webkit-backdrop-filter: blur(16px);
-   230|}
-   231|.footer-divider {
-   232|    height: 1px; border: none;
-   233|    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), rgba(139,92,246,0.3), rgba(6,182,212,0.3), transparent);
-   234|}
-   235|.footer-inner {
-   236|    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 52px 0 36px;
-   237|}
-   238|.footer-brand { text-align: center; }
-   239|.footer-logo {
-   240|    display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px;
-   241|    font-size: 1.3rem; font-weight: 700; color: var(--text-primary);
-   242|}
-   243|.footer-logo-icon {
-   244|    width: 36px; height: 36px; border-radius: 10px; background: var(--gradient-main);
-   245|    display: flex; align-items: center; justify-content: center; font-size: 1rem;
-   246|}
-   247|.footer-brand p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
-   248|.footer-col h4 {
-   249|    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
-   250|    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px;
-   251|}
-   252|.footer-col ul { list-style: none; padding: 0; }
-   253|.footer-col li { margin-bottom: 10px; }
-   254|.footer-col a {
-   255|    color: var(--text-secondary); font-size: 0.9rem; text-decoration: none;
-   256|    transition: var(--transition-fast); display: inline-flex; align-items: center; gap: 8px;
-   257|}
-   258|.footer-col a:hover { color: var(--accent-blue); transform: translateX(4px); }
-   259|.footer-tech { display: flex; flex-wrap: wrap; gap: 8px; }
-   260|.footer-tech-badge {
-   261|    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 500;
-   262|    background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-   263|    color: var(--text-muted); transition: var(--transition-fast);
-   264|}
-   265|.footer-tech-badge:hover { border-color: rgba(59,130,246,0.2); color: var(--text-secondary); }
-   266|.footer-bottom {
-   267|    display: flex; justify-content: center; align-items: center;
-   268|    padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.04);
-   269|    font-size: 0.82rem; color: var(--text-muted);
-   270|}
-   271|.back-to-top {
-   272|    position: fixed; bottom: 32px; right: 32px; z-index: 1000;
-   273|    width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--glass-border);
-   274|    background: rgba(15, 23, 42, 0.9); color: var(--text-muted); cursor: pointer;
-   275|    display: flex; align-items: center; justify-content: center; font-size: 1rem;
-   276|    transition: var(--transition-fast); opacity: 0; visibility: hidden;
-   277|}
-   278|.back-to-top.visible { opacity: 1; visibility: visible; }
-   279|.back-to-top:hover { border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-4px); }
-   280|
-   281|.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
-   282|.reveal.visible { opacity: 1; transform: translateY(0); }
-   283|
-   284|@keyframes gradient-shift {
-   285|    0% { background-position: 0% 50%; }
-   286|    50% { background-position: 100% 50%; }
-   287|    100% { background-position: 0% 50%; }
-   288|}
-   289|
-   290|/* 自定义鼠标指针 — JS 驱动（CSS 只做兜底） */
-   291|html { cursor: none !important; }
-   292|a, button, input, select, textarea, .clickable, [role="button"],
-   293|.search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item,
-   294|.tag-pill, .contact-btn, .back-to-top, .btn-primary, .btn-secondary,
-   295|.read-more, .search-result-item { cursor: none !important; }
-   296|
-   297|/* 光标元素 */
-   298|.cursor-dot {
-   299|    position: fixed; pointer-events: none; z-index: 99998;
-   300|    width: 8px; height: 8px; border-radius: 50%;
-   301|    background: var(--accent-cyan);
-   302|    box-shadow: 0 0 12px rgba(6,182,212,0.6), 0 0 24px rgba(6,182,212,0.3);
-   303|    transform: translate(-50%, -50%);
-   304|    transition: width 0.15s, height 0.15s, background 0.15s;
-   305|}
-   306|.cursor-ring {
-   307|    position: fixed; pointer-events: none; z-index: 99997;
-   308|    width: 36px; height: 36px; border-radius: 50%;
-   309|    border: 1.5px solid rgba(6,182,212,0.4);
-   310|    background: rgba(6,182,212,0.04);
-   311|    box-shadow: 0 0 20px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.04);
-   312|    transform: translate(-50%, -50%);
-   313|    transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-   314|}
-   315|/* 悬停可交互元素时放大 */
-   316|.cursor-ring.hover {
-   317|    width: 56px; height: 56px;
-   318|    border-color: rgba(59,130,246,0.5);
-   319|    background: rgba(59,130,246,0.06);
-   320|    box-shadow: 0 0 30px rgba(59,130,246,0.12), inset 0 0 30px rgba(59,130,246,0.06);
-   321|}
-   322|.cursor-dot.hover {
-   323|    width: 6px; height: 6px;
-   324|    background: var(--accent-blue);
-   325|    box-shadow: 0 0 16px rgba(59,130,246,0.7), 0 0 32px rgba(59,130,246,0.4);
-   326|}
-   327|@keyframes logo-float {
-   328|    0%, 100% { transform: translateY(0); }
-   329|    50% { transform: translateY(-6px); }
-   330|}
-   331|@keyframes fade-in-up {
-   332|    from { opacity: 0; transform: translateY(20px); }
-   333|    to { opacity: 1; transform: translateY(0); }
-   334|}
-   335|
-   336|@media (max-width: 1200px) {
-   337|    .footer-inner { grid-template-columns: repeat(2, 1fr); }
-   338|}
-   339|@media (max-width: 768px) {
-   340|    :root { --nav-height: 64px; }
-   341|    .nav-links {
-   342|        display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
-   343|        background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(20px);
-   344|        flex-direction: column; padding: 20px; gap: 4px;
-   345|        border-bottom: 1px solid var(--glass-border);
-   346|    }
-   347|    .nav-links.open { display: flex; }
-   348|    .mobile-toggle { display: block; }
-   349|    .container { padding: 0 18px; }
-   350|    .footer-inner { grid-template-columns: 1fr; }
-   351|    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-   352|}
-   353|    </style>
-   354|</head>
-   355|<body>
-   356|    <!-- 背景轮播 -->
-   357|    <div class="bg-slideshow">
-   358|        <div class="bg-slide active" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/1.jpg')"></div>
-   359|        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/2.jpg')"></div>
-   360|        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/3.jpg')"></div>
-   361|        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/4.jpg')"></div>
-   362|        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/5.jpg')"></div>
-   363|        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/6.jpg')"></div>
-   364|    </div>
-   365|    <div class="bg-gradient-overlay"></div>
-   366|
-   367|    <nav class="navbar" id="navbar">
-   368|        <div class="container">
-   369|            <a href="{{ site.baseurl }}/" class="logo">
-   370|                <span class="logo-icon">⚡</span>
-   371|                <span class="logo-text">ChenChuLin</span>
-   372|            </a>
-   373|            <div class="nav-links" id="navLinks">
-   374|                <a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
-   375|                <a href="{{ site.baseurl }}/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
-   376|                <a href="{{ site.baseurl }}/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
-   377|                <a href="{{ site.baseurl }}/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
-   378|                <a href="{{ site.github_url }}" class="nav-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-   379|            </div>
-   380|            <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
-   381|            <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
-   382|        </div>
-   383|    </nav>
-   384|
-   385|    <!-- 搜索弹窗 -->
-   386|    <div class="search-overlay" id="searchOverlay">
-   387|        <div class="search-modal" onclick="event.stopPropagation()">
-   388|            <div class="search-header">
-   389|                <i class="fas fa-search"></i>
-   390|                <input type="text" class="search-input" id="searchInput" placeholder="搜索文章标题、标签、关键词..." autofocus>
-   391|                <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
-   392|            </div>
-   393|            <div class="search-results" id="searchResults">
-   394|                <div class="search-hint">输入关键词开始搜索</div>
-   395|            </div>
-   396|        </div>
-   397|    </div>
-   398|
-   399|    <main class="main-content">
-   400|        <div class="container">
-   401|            {{ content }}
-   402|        </div>
-   403|    </main>
-   404|
-   405|    <footer class="footer">
-   406|        <div class="container">
-   407|            <hr class="footer-divider">
-   408|            <div class="footer-inner">
-   409|                <div class="footer-brand">
-   410|                    <div class="footer-logo">
-   411|                        <span class="footer-logo-icon">⚡</span>
-   412|                        ChenChuLin
-   413|                    </div>
-   414|                    <p>专注于数据中心网络、AI算力架构、路由交换与Linux运维的技术博客。</p>
-   415|                </div>
-   416|                <div class="footer-col">
-   417|                    <h4>快速导航</h4>
-   418|                    <ul>
-   419|                        <li><a href="{{ site.baseurl }}/"><i class="fas fa-chevron-right"></i> 首页</a></li>
-   420|                        <li><a href="{{ site.baseurl }}/categories/"><i class="fas fa-chevron-right"></i> 文章分类</a></li>
-   421|                        <li><a href="{{ site.baseurl }}/tags/"><i class="fas fa-chevron-right"></i> 标签云</a></li>
-   422|                        <li><a href="{{ site.baseurl }}/about/"><i class="fas fa-chevron-right"></i> 关于作者</a></li>
-   423|                    </ul>
-   424|                </div>
-   425|                <div class="footer-col">
-   426|                    <h4>热门标签</h4>
-   427|                    <div class="footer-tech">
-   428|                        <span class="footer-tech-badge">BGP</span>
-   429|                        <span class="footer-tech-badge">VXLAN</span>
-   430|                        <span class="footer-tech-badge">EVPN</span>
-   431|                        <span class="footer-tech-badge">Spine-Leaf</span>
-   432|                        <span class="footer-tech-badge">Python</span>
-   433|                        <span class="footer-tech-badge">Linux</span>
-   434|                        <span class="footer-tech-badge">Netmiko</span>
-   435|                        <span class="footer-tech-badge">Ansible</span>
-   436|                    </div>
-   437|                </div>
-   438|                <div class="footer-col">
-   439|                    <h4>技术栈</h4>
-   440|                    <div class="footer-tech">
-   441|                        <span class="footer-tech-badge">Jekyll</span>
-   442|                        <span class="footer-tech-badge">Cloudflare</span>
-   443|                        <span class="footer-tech-badge">Huawei CE</span>
-   444|                        <span class="footer-tech-badge">Cisco</span>
-   445|                        <span class="footer-tech-badge">BGP/OSPF</span>
-   446|                        <span class="footer-tech-badge">Docker</span>
-   447|                        <span class="footer-tech-badge">Git</span>
-   448|                        <span class="footer-tech-badge">WSL2</span>
-   449|                    </div>
-   450|                </div>
-   451|            </div>
-   452|            <div class="footer-bottom">
-   453|                © {{ site.time | date: "%Y" }} {{ site.author }} · 用心记录每一行代码
-   454|            </div>
-   455|        </div>
-   456|    </footer>
-   457|
-   458|    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
-   459|
-   460|    <div class="cursor-dot" id="cursorDot"></div>
-   461|<div class="cursor-ring" id="cursorRing"></div>
-   462|<script>
-   463|    // === 背景轮播 ===
-   464|    (function() {
-   465|        const slides = document.querySelectorAll('.bg-slide');
-   466|        let current = 0;
-   467|        const total = slides.length;
-   468|        if (total < 2) return;
-   469|
-   470|        function nextSlide() {
-   471|            slides[current].classList.remove('active');
-   472|            current = (current + 1) % total;
-   473|            slides[current].classList.add('active');
-   474|        }
-   475|        setInterval(nextSlide, 5000);
-   476|    })();
-   477|
-   478|    // === 导航滚动效果 ===
-   479|    const navbar = document.getElementById('navbar');
-   480|    const backToTop = document.getElementById('backToTop');
-   481|    window.addEventListener('scroll', () => {
-   482|        navbar.classList.toggle('scrolled', window.scrollY > 50);
-   483|        backToTop.classList.toggle('visible', window.scrollY > 300);
-   484|    });
-   485|
-   486|    const toggle = document.getElementById('mobileToggle');
-   487|    const navLinks = document.getElementById('navLinks');
-   488|    toggle && toggle.addEventListener('click', () => {
-   489|        navLinks.classList.toggle('open');
-   490|        const icon = toggle.querySelector('i');
-   491|        icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
-   492|    });
-   493|
-   494|    const observer = new IntersectionObserver((entries) => {
-   495|        entries.forEach(entry => {
-   496|            if (entry.isIntersecting) {
-   497|                entry.target.classList.add('visible');
-   498|                observer.unobserve(entry.target);
-   499|            }
-   500|        });
-   501|   501|    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-   502|    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-   503|
-   504|    // === 禁止右键 — 鼠标附近自然提示 ===
-   505|    document.addEventListener('contextmenu', function(e) {
-   506|        e.preventDefault();
-   507|        var toast = document.createElement('div');
-   508|        toast.textContent = '📖 为了阅读体验，本站已禁用右键';
-   509|        toast.style.cssText = 'position:fixed;top:' + (e.clientY - 50) + 'px;left:' + (e.clientX + 16) + 'px;background:rgba(15,23,42,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text-secondary);padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);font-size:0.85rem;z-index:99999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.25s ease';
-   510|        document.body.appendChild(toast);
-   511|        requestAnimationFrame(function() { toast.style.opacity = '1'; });
-   512|        setTimeout(function() {
-   513|            toast.style.opacity = '0';
-   514|            setTimeout(function() { toast.remove(); }, 300);
-   515|        }, 1800);
-   516|    });
-   517|
-   518|    // === 自定义鼠标光标 ===
-   519|    (function() {
-   520|        var dot = document.getElementById('cursorDot');
-   521|        var ring = document.getElementById('cursorRing');
-   522|        if (!dot || !ring) return;
-   523|
-   524|        var mouseX = 0, mouseY = 0;
-   525|        var ringX = 0, ringY = 0;
-   526|        var hoverEls = 'a, button, input, select, textarea, .clickable, [role="button"], .search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item, .tag-pill, .contact-btn, .back-to-top, .btn-primary, .btn-secondary, .read-more, .search-result-item';
-   527|
-   528|        // 鼠标移动 — dot 精准跟随, ring 用 rAF 平滑追赶
-   529|        document.addEventListener('mousemove', function(e) {
-   530|            mouseX = e.clientX;
-   531|            mouseY = e.clientY;
-   532|            dot.style.left = mouseX + 'px';
-   533|            dot.style.top = mouseY + 'px';
-   534|
-   535|            // 检测悬停
-   536|            var target = e.target;
-   537|            var isHover = target.matches && (target.matches(hoverEls) || target.closest(hoverEls));
-   538|            dot.classList.toggle('hover', isHover);
-   539|            ring.classList.toggle('hover', isHover);
-   540|        });
-   541|
-   542|        // 平滑追赶环
-   543|        function follow() {
-   544|            ringX += (mouseX - ringX) * 0.18;
-   545|            ringY += (mouseY - ringY) * 0.18;
-   546|            ring.style.left = ringX + 'px';
-   547|            ring.style.top = ringY + 'px';
-   548|            requestAnimationFrame(follow);
-   549|        }
-   550|        follow();
-   551|
-   552|        // 离开窗口时隐藏
-   553|        document.addEventListener('mouseleave', function() {
-   554|            dot.style.opacity = '0';
-   555|            ring.style.opacity = '0';
-   556|        });
-   557|        document.addEventListener('mouseenter', function() {
-   558|            dot.style.opacity = '1';
-   559|            ring.style.opacity = '1';
-   560|        });
-   561|    })();
-   562|
-   563|    // === 搜索功能 ===
-   564|    (function() {
-   565|        const searchBtn = document.getElementById('searchBtn');
-   566|        const overlay = document.getElementById('searchOverlay');
-   567|        const input = document.getElementById('searchInput');
-   568|        const results = document.getElementById('searchResults');
-   569|        const close = document.getElementById('searchClose');
-   570|        let posts = [];
-   571|
-   572|        // 加载搜索索引
-   573|        function loadIndex() {
-   574|            fetch('{{ site.baseurl | default: "" }}/search.json')
-   575|                .then(r => r.json())
-   576|                .then(data => { posts = data; })
-   577|                .catch(() => {});
-   578|        }
-   579|        loadIndex();
-   580|
-   581|        function openSearch() {
-   582|            overlay.classList.add('active');
-   583|            document.body.style.overflow = 'hidden';
-   584|            setTimeout(() => input.focus(), 100);
-   585|        }
-   586|
-   587|        function closeSearch() {
-   588|            overlay.classList.remove('active');
-   589|            document.body.style.overflow = '';
-   590|            input.value = '';
-   591|            results.innerHTML = '<div class="search-hint">输入关键词开始搜索</div>';
-   592|        }
-   593|
-   594|        function doSearch(query) {
-   595|            if (!query.trim() || posts.length === 0) {
-   596|                results.innerHTML = '<div class="search-hint">' +
-   597|                    (posts.length === 0 ? '正在加载搜索索引...' : '输入关键词开始搜索') +
-   598|                    '</div>';
-   599|                return;
-   600|            }
-   601|            const q = query.toLowerCase();
-   602|            const matched = posts.filter(p => {
-   603|                return p.title.toLowerCase().includes(q) ||
-   604|                       p.tags.toLowerCase().includes(q) ||
-   605|                       p.categories.toLowerCase().includes(q) ||
-   606|                       p.excerpt.toLowerCase().includes(q);
-   607|            });
-   608|
-   609|            if (matched.length === 0) {
-   610|                results.innerHTML = '<div class="search-hint">未找到相关文章</div>';
-   611|                return;
-   612|            }
-   613|
-   614|            results.innerHTML = matched.slice(0, 20).map(p => {
-   615|                const hl = (text) => {
-   616|                    const idx = text.toLowerCase().indexOf(q);
-   617|                    if (idx === -1) return text;
-   618|                    return text.slice(0, idx) + '<em>' + text.slice(idx, idx + q.length) + '</em>' + text.slice(idx + q.length);
-   619|                };
-   620|                return '<a href="' + p.url + '" class="search-result-item" data-url="' + p.url + '">' +
-   621|                    '<div class="search-result-title">' + hl(p.title) + '</div>' +
-   622|                    '<div class="search-result-meta">' +
-   623|                    '<span>' + p.date + '</span>' +
-   624|                    (p.tags ? '<span class="tag">' + p.tags.split(', ').map(t => '#' + t).join(' ') + '</span>' : '') +
-   625|                    '</div>' +
-   626|                    '<div class="search-result-excerpt">' + hl(p.excerpt) + '</div>' +
-   627|                    '</a>';
-   628|            }).join('');
-   629|
-   630|            // 点击搜索结果跳转并关闭
-   631|            results.querySelectorAll('.search-result-item').forEach(el => {
-   632|                el.addEventListener('click', function(e) {
-   633|                    e.preventDefault();
-   634|                    const url = this.getAttribute('data-url');
-   635|                    if (url) window.location.href = url;
-   636|                    closeSearch();
-   637|                });
-   638|            });
-   639|        }
-   640|
-   641|        searchBtn && searchBtn.addEventListener('click', openSearch);
-   642|        close && close.addEventListener('click', closeSearch);
-   643|        overlay && overlay.addEventListener('click', closeSearch);
-   644|        input && input.addEventListener('input', function() { doSearch(this.value); });
-   645|        input && input.addEventListener('keydown', function(e) {
-   646|            if (e.key === 'Escape') closeSearch();
-   647|        });
-   648|        // 全局快捷键: / 或 Ctrl+K
-   649|        document.addEventListener('keydown', function(e) {
-   650|            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
-   651|                e.preventDefault();
-   652|                openSearch();
-   653|            }
-   654|            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-   655|                e.preventDefault();
-   656|                openSearch();
-   657|            }
-   658|        });
-   659|    })();
-   660|    </script>
-   661|</body>
-   662|</html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title | default: site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <meta name="author" content="{{ site.author }}">
+
+    <meta name="theme-color" content="#0f172a">
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+:root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f172a;
+    --bg-card: rgba(15, 23, 42, 0.6);
+    --bg-card-hover: rgba(30, 41, 59, 0.8);
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-purple: #8b5cf6;
+    --accent-pink: #ec4899;
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --gradient-main: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    --gradient-cool: linear-gradient(135deg, #06b6d4, #3b82f6);
+    --gradient-warm: linear-gradient(135deg, #f59e0b, #ec4899);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s ease;
+    --font-sans: 'Noto Sans SC', 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --nav-height: 72px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === 背景轮播 === */
+.bg-slideshow {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+    overflow: hidden;
+}
+.bg-slide {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 1.5s ease-in-out;
+}
+.bg-slide.active { opacity: 1; }
+.bg-slide::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 14, 26, 0.55);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.3) transparent; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.5); }
+::selection { background: rgba(59,130,246,0.3); color: #fff; }
+
+body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+#particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.bg-gradient-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+    background:
+        radial-gradient(ellipse 600px 400px at 20% 20%, rgba(59,130,246,0.08), transparent),
+        radial-gradient(ellipse 500px 500px at 80% 80%, rgba(139,92,246,0.06), transparent),
+        radial-gradient(ellipse 400px 300px at 50% 50%, rgba(6,182,212,0.04), transparent);
+}
+
+.navbar {
+    position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); z-index: 1000;
+    background: transparent; border-bottom: 1px solid transparent;
+    transition: all 0.4s ease;
+}
+.navbar.scrolled { background: rgba(10, 14, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); }
+.navbar .container { max-width: 1400px; margin: 0 auto; padding: 0 clamp(24px, 4vw, 60px); height: 100%; display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-primary); transition: var(--transition-fast); }
+.logo:hover { transform: scale(1.03); }
+.logo-icon {
+    width: 40px; height: 40px; border-radius: 12px; background: var(--gradient-main);
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    box-shadow: 0 0 20px rgba(59,130,246,0.3);
+}
+.logo-text {
+    font-size: 1.5rem; font-weight: 700;
+    background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+    color: var(--text-secondary); text-decoration: none;
+    padding: 10px 18px; border-radius: var(--radius-sm);
+    font-size: 0.92rem; font-weight: 500; position: relative;
+    transition: var(--transition-fast);
+}
+.nav-link::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 2px; background: var(--gradient-main); border-radius: 1px;
+    transition: width 0.3s ease;
+}
+.nav-link:hover, .nav-link.active { color: var(--text-primary); background: rgba(255,255,255,0.08); }
+.nav-link:hover::after, .nav-link.active::after { width: 24px; }
+.nav-link i { margin-right: 6px; }
+.mobile-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.3rem; cursor: pointer; padding: 8px; }
+.search-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    color: var(--text-secondary); cursor: pointer; transition: var(--transition-fast);
+}
+.search-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+/* 搜索弹窗 */
+.search-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    z-index: 9999; display: none;
+    align-items: flex-start; justify-content: center;
+    padding-top: 12vh;
+}
+.search-overlay.active { display: flex; }
+.search-modal {
+    width: min(680px, 90vw);
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    animation: search-slide-in 0.25s ease-out;
+}
+@keyframes search-slide-in {
+    from { opacity: 0; transform: translateY(-24px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.search-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.search-header i { color: var(--text-muted); font-size: 1.1rem; }
+.search-input {
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--text-primary); font-size: 1.1rem;
+    font-family: var(--font-sans);
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-close {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.2rem; cursor: pointer; padding: 8px;
+    transition: var(--transition-fast);
+}
+.search-close:hover { color: var(--text-primary); transform: rotate(90deg); }
+.search-results {
+    max-height: 50vh; overflow-y: auto; padding: 8px;
+}
+.search-hint {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-muted); font-size: 0.95rem;
+}
+.search-result-item {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 16px 20px; border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    text-decoration: none !important;
+}
+.search-result-item:hover { background: rgba(255,255,255,0.04); }
+.search-result-title {
+    font-size: 1rem; font-weight: 600;
+    color: var(--text-primary);
+}
+.search-result-title em { color: var(--accent-blue); font-style: normal; }
+.search-result-meta {
+    font-size: 0.82rem; color: var(--text-muted);
+    display: flex; gap: 12px; align-items: center;
+}
+.search-result-meta .tag { color: var(--accent-cyan); }
+.search-result-excerpt {
+    font-size: 0.88rem; color: var(--text-secondary);
+    line-height: 1.5;
+}
+.search-result-excerpt em { color: var(--accent-blue); font-style: normal; }
+.search-results::-webkit-scrollbar { width: 4px; }
+.search-results::-webkit-scrollbar-track { background: transparent; }
+.search-results::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
+
+.main-content {
+    position: relative; z-index: 1;
+    min-height: calc(100vh - var(--nav-height) - 160px);
+    padding: calc(var(--nav-height) + 40px) 0 60px;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
+
+.section-title {
+    font-size: 1.5rem; font-weight: 700; margin-bottom: 36px;
+    display: flex; align-items: center; gap: 14px; padding-left: 20px; position: relative;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 28px; border-radius: 2px; background: var(--gradient-main);
+    box-shadow: 0 0 12px rgba(59,130,246,0.4);
+}
+.section-title i { color: var(--accent-cyan); font-size: 1.2rem; }
+
+.footer {
+    position: relative; z-index: 1; margin-top: 80px;
+    background: transparent;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+.footer-divider {
+    height: 1px; border: none;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), rgba(139,92,246,0.3), rgba(6,182,212,0.3), transparent);
+}
+.footer-inner {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 52px 0 36px;
+}
+.footer-brand { text-align: center; }
+.footer-logo {
+    display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px;
+    font-size: 1.3rem; font-weight: 700; color: var(--text-primary);
+}
+.footer-logo-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--gradient-main);
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.footer-brand p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
+.footer-col h4 {
+    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px;
+}
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col li { margin-bottom: 10px; }
+.footer-col a {
+    color: var(--text-secondary); font-size: 0.9rem; text-decoration: none;
+    transition: var(--transition-fast); display: inline-flex; align-items: center; gap: 8px;
+}
+.footer-col a:hover { color: var(--accent-blue); transform: translateX(4px); }
+.footer-tech { display: flex; flex-wrap: wrap; gap: 8px; }
+.footer-tech-badge {
+    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+    color: var(--text-muted); transition: var(--transition-fast);
+}
+.footer-tech-badge:hover { border-color: rgba(59,130,246,0.2); color: var(--text-secondary); }
+.footer-bottom {
+    display: flex; justify-content: center; align-items: center;
+    padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.82rem; color: var(--text-muted);
+}
+.back-to-top {
+    position: fixed; bottom: 32px; right: 32px; z-index: 1000;
+    width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.9); color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    transition: var(--transition-fast); opacity: 0; visibility: hidden;
+}
+.back-to-top.visible { opacity: 1; visibility: visible; }
+.back-to-top:hover { border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-4px); }
+
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 自定义鼠标指针 — SVG data URI 方式，可靠无 JS 依赖 */
+html {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='none' stroke='%2306b6d4' stroke-width='1.5' opacity='0.8'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2306b6d4' opacity='0.9'/%3E%3C/svg%3E") 12 12, auto;
+}
+a, button, .clickable, [role="button"],
+.search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item,
+.tag-pill, .contact-btn, .back-to-top, .btn-primary, .btn-secondary,
+.read-more, .search-result-item {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='7' fill='none' stroke='%233b82f6' stroke-width='1.8' opacity='0.8'/%3E%3Ccircle cx='14' cy='14' r='3' fill='%233b82f6' opacity='0.9'/%3E%3C/svg%3E") 14 14, pointer;
+}
+/* 输入框保持编辑光标 */
+input, select, textarea { cursor: text; }
+@keyframes logo-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1200px) {
+    .footer-inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    :root { --nav-height: 64px; }
+    .nav-links {
+        display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
+        background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(20px);
+        flex-direction: column; padding: 20px; gap: 4px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+    .nav-links.open { display: flex; }
+    .mobile-toggle { display: block; }
+    .container { padding: 0 18px; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+    </style>
+</head>
+<body>
+    <!-- 背景轮播 -->
+    <div class="bg-slideshow">
+        <div class="bg-slide active" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/1.jpg')"></div>
+        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/2.jpg')"></div>
+        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/3.jpg')"></div>
+        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/4.jpg')"></div>
+        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/5.jpg')"></div>
+        <div class="bg-slide" style="background-image: url('{{ site.baseurl }}/assets/backgrounds/6.jpg')"></div>
+    </div>
+    <div class="bg-gradient-overlay"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="{{ site.baseurl }}/" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">ChenChuLin</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}"><i class="fas fa-home"></i> 首页</a>
+                <a href="{{ site.baseurl }}/categories/" class="nav-link {% if page.url == '/categories/' %}active{% endif %}"><i class="fas fa-folder"></i> 分类</a>
+                <a href="{{ site.baseurl }}/tags/" class="nav-link {% if page.url == '/tags/' %}active{% endif %}"><i class="fas fa-tags"></i> 标签</a>
+                <a href="{{ site.baseurl }}/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
+                <a href="{{ site.github_url }}" class="nav-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+            <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+            <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- 搜索弹窗 -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-modal" onclick="event.stopPropagation()">
+            <div class="search-header">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索文章标题、标签、关键词..." autofocus>
+                <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-results" id="searchResults">
+                <div class="search-hint">输入关键词开始搜索</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            {{ content }}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <hr class="footer-divider">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="footer-logo-icon">⚡</span>
+                        ChenChuLin
+                    </div>
+                    <p>专注于数据中心网络、AI算力架构、路由交换与Linux运维的技术博客。</p>
+                </div>
+                <div class="footer-col">
+                    <h4>快速导航</h4>
+                    <ul>
+                        <li><a href="{{ site.baseurl }}/"><i class="fas fa-chevron-right"></i> 首页</a></li>
+                        <li><a href="{{ site.baseurl }}/categories/"><i class="fas fa-chevron-right"></i> 文章分类</a></li>
+                        <li><a href="{{ site.baseurl }}/tags/"><i class="fas fa-chevron-right"></i> 标签云</a></li>
+                        <li><a href="{{ site.baseurl }}/about/"><i class="fas fa-chevron-right"></i> 关于作者</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>热门标签</h4>
+                    <div class="footer-tech">
+                        <span class="footer-tech-badge">BGP</span>
+                        <span class="footer-tech-badge">VXLAN</span>
+                        <span class="footer-tech-badge">EVPN</span>
+                        <span class="footer-tech-badge">Spine-Leaf</span>
+                        <span class="footer-tech-badge">Python</span>
+                        <span class="footer-tech-badge">Linux</span>
+                        <span class="footer-tech-badge">Netmiko</span>
+                        <span class="footer-tech-badge">Ansible</span>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>技术栈</h4>
+                    <div class="footer-tech">
+                        <span class="footer-tech-badge">Jekyll</span>
+                        <span class="footer-tech-badge">Cloudflare</span>
+                        <span class="footer-tech-badge">Huawei CE</span>
+                        <span class="footer-tech-badge">Cisco</span>
+                        <span class="footer-tech-badge">BGP/OSPF</span>
+                        <span class="footer-tech-badge">Docker</span>
+                        <span class="footer-tech-badge">Git</span>
+                        <span class="footer-tech-badge">WSL2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © {{ site.time | date: "%Y" }} {{ site.author }} · 用心记录每一行代码
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+
+<script>
+    // === 背景轮播 ===
+    (function() {
+        const slides = document.querySelectorAll('.bg-slide');
+        let current = 0;
+        const total = slides.length;
+        if (total < 2) return;
+
+        function nextSlide() {
+            slides[current].classList.remove('active');
+            current = (current + 1) % total;
+            slides[current].classList.add('active');
+        }
+        setInterval(nextSlide, 5000);
+    })();
+
+    // === 导航滚动效果 ===
+    const navbar = document.getElementById('navbar');
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+        backToTop.classList.toggle('visible', window.scrollY > 300);
+    });
+
+    const toggle = document.getElementById('mobileToggle');
+    const navLinks = document.getElementById('navLinks');
+    toggle && toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        const icon = toggle.querySelector('i');
+        icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // === 禁止右键 — 鼠标附近提示（边界保护） ===
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        var toast = document.createElement('div');
+        toast.textContent = '📖 为了阅读体验，本站已禁用右键';
+        // 计算位置（防止超出右/上边界）
+        var x = Math.min(e.clientX + 16, window.innerWidth - 200);
+        var y = Math.max(e.clientY - 50, 10);
+        toast.style.cssText = 'position:fixed;top:' + y + 'px;left:' + x + 'px;background:rgba(15,23,42,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text-secondary);padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);font-size:0.85rem;z-index:99999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.25s ease';
+        document.body.appendChild(toast);
+        requestAnimationFrame(function() { toast.style.opacity = '1'; });
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 1800);
+    });
+
+    // === 搜索功能 ===
+    (function() {
+        const searchBtn = document.getElementById('searchBtn');
+        const overlay = document.getElementById('searchOverlay');
+        const input = document.getElementById('searchInput');
+        const results = document.getElementById('searchResults');
+        const close = document.getElementById('searchClose');
+        let posts = [];
+
+        // 加载搜索索引
+        function loadIndex() {
+            fetch('{{ site.baseurl | default: "" }}/search.json')
+                .then(r => r.json())
+                .then(data => { posts = data; })
+                .catch(() => {});
+        }
+        loadIndex();
+
+        function openSearch() {
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closeSearch() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            input.value = '';
+            results.innerHTML = '<div class="search-hint">输入关键词开始搜索</div>';
+        }
+
+        function doSearch(query) {
+            if (!query.trim() || posts.length === 0) {
+                results.innerHTML = '<div class="search-hint">' +
+                    (posts.length === 0 ? '正在加载搜索索引...' : '输入关键词开始搜索') +
+                    '</div>';
+                return;
+            }
+            const q = query.toLowerCase();
+            const matched = posts.filter(p => {
+                return p.title.toLowerCase().includes(q) ||
+                       p.tags.toLowerCase().includes(q) ||
+                       p.categories.toLowerCase().includes(q) ||
+                       p.excerpt.toLowerCase().includes(q);
+            });
+
+            if (matched.length === 0) {
+                results.innerHTML = '<div class="search-hint">未找到相关文章</div>';
+                return;
+            }
+
+            results.innerHTML = matched.slice(0, 20).map(p => {
+                const hl = (text) => {
+                    const idx = text.toLowerCase().indexOf(q);
+                    if (idx === -1) return text;
+                    return text.slice(0, idx) + '<em>' + text.slice(idx, idx + q.length) + '</em>' + text.slice(idx + q.length);
+                };
+                return '<a href="' + p.url + '" class="search-result-item" data-url="' + p.url + '">' +
+                    '<div class="search-result-title">' + hl(p.title) + '</div>' +
+                    '<div class="search-result-meta">' +
+                    '<span>' + p.date + '</span>' +
+                    (p.tags ? '<span class="tag">' + p.tags.split(', ').map(t => '#' + t).join(' ') + '</span>' : '') +
+                    '</div>' +
+                    '<div class="search-result-excerpt">' + hl(p.excerpt) + '</div>' +
+                    '</a>';
+            }).join('');
+
+            // 点击搜索结果跳转并关闭
+            results.querySelectorAll('.search-result-item').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('data-url');
+                    if (url) window.location.href = url;
+                    closeSearch();
+                });
+            });
+        }
+
+        searchBtn && searchBtn.addEventListener('click', openSearch);
+        close && close.addEventListener('click', closeSearch);
+        overlay && overlay.addEventListener('click', closeSearch);
+        input && input.addEventListener('input', function() { doSearch(this.value); });
+        input && input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSearch();
+        });
+        // 全局快捷键: / 或 Ctrl+K
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+                e.preventDefault();
+                openSearch();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                openSearch();
+            }
+        });
+    })();
+    </script>
+</body>
+</html>
