@@ -531,5 +531,15 @@ twikoo.init({
     path: window.location.pathname,
     lang: '{{ site.twikoo.lang | default: "zh-CN" }}',
 });
+// Twikoo 渲染完成后自动隐藏昵称/邮箱/网站输入框
+(function() {
+    var timer = setInterval(function() {
+        var meta = document.querySelector('#tcomment .tk-meta-input');
+        if (meta) {
+            meta.style.display = 'none';
+            clearInterval(timer);
+        }
+    }, 200);
+})();
 </script>
 {% endif %}
