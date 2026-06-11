@@ -30,26 +30,62 @@ input, select, textarea { cursor: text !important; }
     --glass-border: rgba(255, 255, 255, 0.06);
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
-    --text-muted: #475569;
+    --text-muted: #64748b;
     --accent-blue: #3b82f6;
     --accent-cyan: #06b6d4;
     --accent-purple: #8b5cf6;
-    --accent-pink: #ec4899;
     --accent-emerald: #10b981;
     --accent-amber: #f59e0b;
-    --gradient-main: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    --gradient-cool: linear-gradient(135deg, #06b6d4, #3b82f6);
-    --gradient-warm: linear-gradient(135deg, #f59e0b, #ec4899);
     --radius: 16px;
     --radius-sm: 10px;
-    --radius-lg: 24px;
-    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
-    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.2s ease;
-    --font-sans: 'Noto Sans SC', 'Inter', -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
     --nav-height: 72px;
+    --transition-fast: 0.2s ease;
+    --skeleton-base: rgba(148, 163, 184, 0.06);
+    --skeleton-shine: rgba(148, 163, 184, 0.12);
+}
+
+/* 亮色模式 */
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(241, 245, 249, 0.9);
+    --glass: rgba(0, 0, 0, 0.02);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --accent-blue: #2563eb;
+    --accent-cyan: #0d9488;
+    --accent-purple: #7c3aed;
+    --accent-emerald: #059669;
+    --accent-amber: #d97706;
+    --skeleton-base: rgba(100, 116, 139, 0.08);
+    --skeleton-shine: rgba(100, 116, 139, 0.18);
+}
+
+/* === 骨架屏 shimmer 动画 === */
+.skeleton-wrapper {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.skeleton-wrapper.loading { opacity: 1; }
+.skeleton-wrapper.ready { opacity: 0; pointer-events: none; }
+.skeleton-block {
+    background: var(--skeleton-base);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.skeleton-block::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,6 +105,7 @@ input, select, textarea { cursor: text !important; }
     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(10, 14, 26, 0.55);
 }
+[data-theme="light"] .bg-slide::after { background: rgba(255, 255, 255, 0.30); }
 
 html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.3) transparent; }
 ::-webkit-scrollbar { width: 6px; }
@@ -102,6 +139,7 @@ body {
     transition: all 0.4s ease;
 }
 .navbar.scrolled { background: rgba(10, 14, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); }
+[data-theme="light"] .navbar.scrolled { background: rgba(255, 255, 255, 0.85); }
 .navbar .container { max-width: 1400px; margin: 0 auto; padding: 0 clamp(24px, 4vw, 60px); height: 100%; display: flex; justify-content: space-between; align-items: center; }
 .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-primary); transition: var(--transition-fast); }
 .logo:hover { transform: scale(1.03); }
@@ -138,6 +176,18 @@ body {
     color: var(--text-secondary); cursor: pointer; transition: var(--transition-fast);
 }
 .search-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+/* 亮色模式切换按钮 */
+.theme-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    color: var(--text-secondary); cursor: default;
+    transition: var(--transition-fast); font-size: 1.05rem;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.1); color: var(--accent-amber); }
+.theme-btn i { transition: transform 0.4s ease; }
+.theme-btn:hover i { transform: rotate(30deg); }
 
 /* 搜索弹窗 */
 .search-overlay {
@@ -286,6 +336,14 @@ body {
 .back-to-top.visible { opacity: 1; visibility: visible; }
 .back-to-top:hover { border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-4px); }
 
+/* 站点统计 */
+.site-stats {
+    margin-top: 16px; font-size: 0.82rem; color: var(--text-muted);
+    display: flex; justify-content: center; gap: 12px; align-items: center;
+}
+.stats-divider { color: var(--glass-border); }
+.site-stats i { margin-right: 4px; }
+
 .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
@@ -367,12 +425,13 @@ body {
 @media (max-width: 768px) {
     :root { --nav-height: 64px; }
     .nav-links {
-        display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
-        background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(20px);
-        flex-direction: column; padding: 20px; gap: 4px;
-        border-bottom: 1px solid var(--glass-border);
-    }
-    .nav-links.open { display: flex; }
+            display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
+            background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(20px);
+            flex-direction: column; padding: 20px; gap: 4px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        [data-theme="light"] .nav-links { background: rgba(255, 255, 255, 0.95); }
+        .nav-links.open { display: flex; }
     .mobile-toggle { display: block; }
     .container { padding: 0 18px; }
     .footer-inner { grid-template-columns: 1fr; }
@@ -411,6 +470,7 @@ body {
                 <a href="{{ site.baseurl }}/about/" class="nav-link {% if page.url == '/about/' %}active{% endif %}"><i class="fas fa-user"></i> 关于</a>
                 <a href="" class="nav-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
             </div>
+            <button class="theme-btn" id="themeBtn" title="切换亮色/暗色模式"><i class="fas fa-moon"></i></button>
             <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
             <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
         </div>
@@ -431,8 +491,13 @@ body {
     </div>
 
     <main class="main-content">
-        <div class="container">
+        <div class="container" id="mainContainer">
+            <div class="skeleton-wrapper loading" id="pageSkeleton">
+                <div class="skeleton-block" style="height: 60vh; border-radius: 16px;"></div>
+            </div>
+            <div style="opacity: 0; transition: opacity 0.5s ease;" id="realContent">
             {{ content }}
+            </div>
         </div>
     </main>
 
@@ -446,6 +511,11 @@ body {
                         ChenChuLin
                     </div>
                     <p>专注于数据中心网络、AI算力架构、路由交换与Linux运维的技术博客。</p>
+                    <div class="site-stats">
+                        <span><i class="fas fa-eye"></i> <span id="busuanzi_value_site_pv"></span> 次访问</span>
+                        <span class="stats-divider">|</span>
+                        <span><i class="fas fa-user"></i> <span id="busuanzi_value_site_uv"></span> 位访客</span>
+                    </div>
                 </div>
                 <div class="footer-col">
                     <h4>快速导航</h4>
@@ -492,6 +562,62 @@ body {
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
 
 <script>
+    // === 亮色/暗色模式切换 ===
+    (function themeSwitch() {
+        const btn = document.getElementById('themeBtn');
+        const html = document.documentElement;
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('blog-theme', theme);
+            // 更新按钮图标
+            if (btn) {
+                btn.innerHTML = theme === 'light'
+                    ? '<i class="fas fa-sun"></i>'
+                    : '<i class="fas fa-moon"></i>';
+            }
+            // 更新 meta theme-color
+            if (metaTheme) {
+                metaTheme.content = theme === 'light' ? '#ffffff' : '#0f172a';
+            }
+        }
+
+        // 读取已保存的主题，或按系统偏好
+        const saved = localStorage.getItem('blog-theme');
+        if (saved === 'light' || saved === 'dark') {
+            setTheme(saved);
+        } else {
+            const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+            setTheme(prefersLight ? 'light' : 'dark');
+        }
+
+        // 切换按钮点击
+        btn && btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const current = html.getAttribute('data-theme') || 'dark';
+            setTheme(current === 'light' ? 'dark' : 'light');
+        });
+    })();
+
+    // === 骨架屏 — 页面加载完成后的过渡 ===
+    (function skeletonReveal() {
+        const skeleton = document.getElementById('pageSkeleton');
+        const content = document.getElementById('realContent');
+        if (!skeleton || !content) return;
+
+        function reveal() {
+            skeleton.classList.remove('loading');
+            skeleton.classList.add('ready');
+            content.style.opacity = '1';
+        }
+
+        // 页面完全加载后或 800ms 后（取先到的）
+        var loaded = false;
+        window.addEventListener('load', function() { loaded = true; reveal(); });
+        setTimeout(function() { if (!loaded) reveal(); }, 600);
+    })();
+
     // === 背景轮播 ===
     (function() {
         const slides = document.querySelectorAll('.bg-slide');
@@ -564,7 +690,7 @@ body {
         var trailTimer = 0;
 
         // 检测可点击元素
-        var clickableSelector = 'a, button, .clickable, [role="button"], .search-btn, .nav-link, .category-card, .post-card, .tag-cloud-item, .tag-pill, .back-to-top, .search-result-item, .read-more, .btn-primary, .btn-secondary';
+        var clickableSelector = 'a, button, .clickable, [role="button"], .search-btn, .theme-btn, .nav-link, .category-card, .post-card, .tag-cloud-item, .tag-pill, .back-to-top, .search-result-item, .read-more, .btn-primary, .btn-secondary';
 
         // Lerp 插值（缓动跟随）
         function lerp(a, b, t) {
@@ -848,6 +974,26 @@ body {
                 openSearch();
             }
         });
+    })();
+    </script>
+    <!-- 不蒜子统计 -->
+    <script async defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <!-- 热门文章追踪 -->
+    <script>
+    (function trackPageView() {
+        var path = window.location.pathname;
+        var title = document.title;
+        // 仅追踪文章页面
+        if (path === '/' || path === '/about/' || path === '/categories/' || path === '/tags/') return;
+        try {
+            var data = JSON.parse(localStorage.getItem('blog-views') || '{}');
+            if (!data[path]) {
+                data[path] = { title: title, url: path, views: 0 };
+            }
+            data[path].views++;
+            data[path].title = title;
+            localStorage.setItem('blog-views', JSON.stringify(data));
+        } catch(e) {}
     })();
     </script>
 </body>

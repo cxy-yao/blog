@@ -197,6 +197,41 @@ layout: default
     .featured-card { grid-template-columns: 1fr; text-align: center; }
     .featured-tags { justify-content: center; }
 }
+
+/* 热门文章排行 */
+.popular-section { padding: 60px 0; }
+.popular-list {
+    display: flex; flex-direction: column; gap: 12px;
+    max-width: 700px; margin: 0 auto;
+}
+.popular-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 24px; background: var(--bg-card);
+    border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+    text-decoration: none; transition: var(--transition-fast);
+}
+.popular-item:hover { background: var(--bg-card-hover); transform: translateX(4px); }
+.popular-rank {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    background: rgba(255,255,255,0.04); color: var(--text-muted);
+}
+.popular-item:nth-child(1) .popular-rank { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+.popular-item:nth-child(2) .popular-rank { background: rgba(148,163,184,0.15); color: var(--text-secondary); }
+.popular-item:nth-child(3) .popular-rank { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+.popular-item-title {
+    flex: 1; font-size: 0.95rem; font-weight: 500;
+    color: var(--text-primary); line-height: 1.4;
+}
+.popular-item-views {
+    font-size: 0.82rem; color: var(--text-muted); flex-shrink: 0;
+}
+.popular-hint {
+    text-align: center; color: var(--text-muted); font-size: 0.9rem;
+    padding: 40px 0;
+}
+
 @media (max-width: 768px) {
     .hero { padding: 60px 0 80px; min-height: auto; }
     .hero-title { font-size: 2.6rem; }
@@ -315,6 +350,13 @@ layout: default
     </div>
 </section>
 
+<section class="popular-section">
+    <h2 class="section-title"><i class="fas fa-chart-line"></i> 热门文章</h2>
+    <div class="popular-list" id="popularList">
+        <div class="popular-hint">浏览文章后排行榜会自动更新</div>
+    </div>
+</section>
+
 <script>
 (function() {
     const texts = [
@@ -347,5 +389,29 @@ layout: default
         setTimeout(type, delay);
     }
     setTimeout(type, 800);
+})();
+
+// === 热门文章排行 ===
+(function renderPopular() {
+    var list = document.getElementById('popularList');
+    if (!list) return;
+    try {
+        var data = JSON.parse(localStorage.getItem('blog-views') || '{}');
+        var items = Object.values(data);
+        // 排除首页和特殊页面
+        items = items.filter(function(p) { return p.url !== '/' && p.views > 0; });
+        items.sort(function(a, b) { return b.views - a.views; });
+        var top = items.slice(0, 5);
+        if (top.length === 0) return;
+        list.innerHTML = top.map(function(p, i) {
+            var views = p.views < 1000 ? p.views + ' 次' : (p.views / 1000).toFixed(1) + 'k 次';
+            var color = i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : i === 2 ? '#8b5cf6' : 'var(--text-muted)';
+            return '<a href="' + p.url + '" class="popular-item">' +
+                '<span class="popular-rank">' + (i + 1) + '</span>' +
+                '<span class="popular-item-title">' + p.title.replace(/ - ChenChuLin.*/, '').replace(/ \|.*/, '') + '</span>' +
+                '<span class="popular-item-views">' + views + '</span>' +
+                '</a>';
+        }).join('');
+    } catch(e) {}
 })();
 </script>
