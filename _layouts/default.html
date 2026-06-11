@@ -72,7 +72,7 @@ input, select, textarea { cursor: text !important; }
     transition: opacity 0.5s ease;
 }
 .skeleton-wrapper.loading { opacity: 1; }
-.skeleton-wrapper.ready { opacity: 0; pointer-events: none; }
+.skeleton-wrapper.ready { opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
 .skeleton-block {
     background: var(--skeleton-base);
     border-radius: 8px;
@@ -778,10 +778,10 @@ body {
             content.style.opacity = '1';
         }
 
-        // 页面完全加载后或 800ms 后（取先到的）
+        // 页面完全加载后或 1200ms 后（取先到的，留出入场动画时间）
         var loaded = false;
         window.addEventListener('load', function() { loaded = true; reveal(); });
-        setTimeout(function() { if (!loaded) reveal(); }, 600);
+        setTimeout(function() { if (!loaded) reveal(); }, 1200);
     })();
 
     // === 背景轮播 ===
