@@ -822,6 +822,15 @@ Waline.init({
 
         var root = host.shadowRoot;
 
+        // 注入按钮样式（Shadow DOM 内部可见）
+        var btnStyle = root.querySelector('#waline-btn-style');
+        if (!btnStyle) {
+            var s = document.createElement('style');
+            s.id = 'waline-btn-style';
+            s.textContent = '.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}';
+            root.appendChild(s);
+        }
+
         // 隐藏底部品牌信息
         var power = root.querySelector('.wl-power');
         var info = root.querySelector('.wl-info');
