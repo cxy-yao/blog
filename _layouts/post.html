@@ -564,8 +564,7 @@ window.addEventListener('scroll', () => {
 {% if site.waline.server_url and site.waline.server_url != "" %}
 <!-- Waline 评论客户端 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css">
-<script src="https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.umd.js"></script>
 <script>
 Waline.init({
     el: '#waline',
