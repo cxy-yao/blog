@@ -52,10 +52,10 @@ input, select, textarea { cursor: text !important; }
     --bg-card-hover: rgba(241, 245, 249, 0.9);
     --glass: rgba(0, 0, 0, 0.02);
     --glass-border: rgba(0, 0, 0, 0.06);
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
-    --accent-blue: #2563eb;
+    --text-primary: #020617;
+    --text-secondary: #1e293b;
+    --text-muted: #334155;
+    --accent-blue: #1d4ed8;
     --accent-cyan: #0d9488;
     --accent-purple: #7c3aed;
     --accent-emerald: #059669;
@@ -583,13 +583,12 @@ body {
             }
         }
 
-        // 读取已保存的主题，或按系统偏好
+        // 默认始终为暗色模式，不跟随系统偏好
         const saved = localStorage.getItem('blog-theme');
         if (saved === 'light' || saved === 'dark') {
             setTheme(saved);
         } else {
-            const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-            setTheme(prefersLight ? 'light' : 'dark');
+            setTheme('dark');
         }
 
         // 切换按钮点击
