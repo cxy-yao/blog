@@ -317,86 +317,11 @@ layout: default
     .password-gate { padding: 60px 24px 40px; }
     .password-card h3 { font-size: 1.1rem; }
 }
-/* === Waline 评论（主题美化） === */
+/* === Waline 评论 === */
 .wl-container {
-    margin-top: 40px;
-    padding-top: 40px;
-    border-top: 1px solid var(--glass-border);
+    margin-top:40px; padding-top:40px;
+    border-top:1px solid var(--glass-border);
 }
-/* 评论计数 */
-.wl-count {
-    color: var(--text-primary) !important;
-    font-size: 1.2rem !important;
-    font-weight: 700 !important;
-    margin-bottom: 20px !important;
-}
-.wl-count span { background: var(--gradient-main) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
-/* 面板/输入区 */
-.wl-panel {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: var(--radius) !important;
-    backdrop-filter: blur(16px) !important;
-    padding: 24px !important;
-    margin-bottom: 24px !important;
-}
-
-/* Waline v3 编辑器适配 */
-.wl-editor {
-    background: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: var(--radius-sm) !important;
-    font-family: var(--font-sans) !important;
-    font-size: 0.95rem !important;
-    padding: 14px !important;
-    min-height: 100px !important;
-    transition: border-color 0.3s ease !important;
-}
-.wl-editor:focus {
-    border-color: var(--accent-blue) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
-}
-
-/* 昵称/邮箱/网址输入行 */
-.wl-meta input {
-    background: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: var(--radius-sm) !important;
-    font-family: var(--font-sans) !important;
-    font-size: 0.9rem !important;
-    padding: 10px 14px !important;
-    transition: border-color 0.3s ease !important;
-}
-.wl-meta input:focus {
-    border-color: var(--accent-blue) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
-}
-/* 提交按钮 */
-.wl-btn {
-    background: var(--gradient-main) !important;
-    color: #fff !important;
-    border: none !important;
-    border-radius: var(--radius-sm) !important;
-    padding: 10px 28px !important;
-    font-size: 0.92rem !important;
-    font-weight: 600 !important;
-    font-family: var(--font-sans) !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 14px rgba(59,130,246,0.3) !important;
-}
-.wl-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(59,130,246,0.4) !important;
-}
-/* 隐藏 Waline 底部信息 */
-.wl-power, .wl-info { display: none !important; }
-
-/* 评论卡片 */
-.wl-card {
-    background: var(--bg-card) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: var(--radius) !important;
     backdrop-filter: blur(16px) !important;
@@ -814,7 +739,7 @@ Waline.init({
     },
 });
 
-// Waline 渲染完成后：隐藏底部信息 + 移动评论计数
+// Waline 渲染完成后：隐藏底部信息 + 按钮可见 + 移动评论计数
 (function() {
     var check = setInterval(function() {
         var host = document.getElementById('waline');
@@ -822,13 +747,31 @@ Waline.init({
 
         var root = host.shadowRoot;
 
-        // 注入按钮样式（Shadow DOM 内部可见）
-        var btnStyle = root.querySelector('#waline-btn-style');
-        if (!btnStyle) {
-            var s = document.createElement('style');
-            s.id = 'waline-btn-style';
-            s.textContent = '.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}';
-            root.appendChild(s);
+        // 用 adoptedStyleSheets 注入按钮样式（持久化，重渲染不会丢失）
+        try {
+            var hasBtnStyle = root.adoptedStyleSheets &&
+                Array.from(root.adoptedStyleSheets).some(function(s) {
+                    return s._walineBtn;
+                });
+            if (!hasBtnStyle) {
+                var sheet = new CSSStyleSheet();
+                sheet._walineBtn = true;
+                sheet.replaceSync(
+                    '.wl-btn{background:#3b82f6!important;color:#fff!important;' +
+                    'border:none!important;border-radius:8px!important;' +
+                    'padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}' +
+                    '.wl-btn:hover{background:#2563eb!important}'
+                );
+                root.adoptedStyleSheets = [sheet].concat(
+                    Array.from(root.adoptedStyleSheets || [])
+                );
+            }
+        } catch(e) {
+            // adoptedStyleSheets 不支持时的备用方案
+            var s = root.querySelector('#wbtn-style') || root.appendChild(
+                Object.assign(document.createElement('style'), {id:'wbtn-style',
+                    textContent:'.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}'})
+            );
         }
 
         // 隐藏底部品牌信息
@@ -846,7 +789,8 @@ Waline.init({
             container.insertBefore(count, container.firstChild);
         }
 
-        clearInterval(check);
+        // 完成后停止检查
+        if (power && info) clearInterval(check);
     }, 300);
     setTimeout(function() { clearInterval(check); }, 10000);
 })();
