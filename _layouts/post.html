@@ -739,7 +739,7 @@ Waline.init({
     },
 });
 
-// Waline 渲染完成后：隐藏底部信息 + 移动评论计数
+// Waline 渲染完成后：按钮可见 + 隐藏底部信息 + 移动评论计数
 (function() {
     var check = setInterval(function() {
         var host = document.getElementById('waline');
@@ -747,13 +747,27 @@ Waline.init({
 
         var root = host.shadowRoot;
 
+        // 给按钮加背景色（adoptedStyleSheets 不会被 Waline 重渲染移除）
+        try {
+            var sheet = new CSSStyleSheet();
+            sheet.replaceSync('.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}.wl-btn:hover{background:#2563eb!important}.wl-btn:disabled{background:rgba(100,116,139,0.3)!important;color:#94a3b8!important;cursor:not-allowed!important}');
+            root.adoptedStyleSheets = [sheet].concat(Array.from(root.adoptedStyleSheets || []));
+        } catch(e) {
+            // fallback
+            var s = root.querySelector('#wbtn-fix');
+            if (!s) {
+                s = document.createElement('style');
+                s.id = 'wbtn-fix';
+                s.textContent = '.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}';
+                root.appendChild(s);
+            }
+        }
+
         // 隐藏底部品牌信息
-        var power = root.querySelector('.wl-power');
-        var info = root.querySelector('.wl-info');
-        var rss = root.querySelector('.wl-rss');
-        if (power) power.style.display = 'none';
-        if (info) info.style.display = 'none';
-        if (rss) rss.style.display = 'none';
+        ['wl-power','wl-info','wl-rss'].forEach(function(c) {
+            var el = root.querySelector('.' + c);
+            if (el) el.style.display = 'none';
+        });
 
         // 将评论计数移到最上面
         var count = root.querySelector('.wl-count');
@@ -762,8 +776,7 @@ Waline.init({
             container.insertBefore(count, container.firstChild);
         }
 
-        // 完成后停止检查
-        if (power && info) clearInterval(check);
+        clearInterval(check);
     }, 300);
     setTimeout(function() { clearInterval(check); }, 10000);
 })();
