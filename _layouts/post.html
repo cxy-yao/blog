@@ -235,9 +235,8 @@ layout: default
 }
 .author-links a:hover { background: rgba(59,130,246,0.1); color: var(--accent-blue); border-color: rgba(59,130,246,0.2); }
 
-@media (max-width: 1600px) { .toc-panel { display: none; } }
+@media (max-width: 1200px) { .toc-panel { display: none; } }
 
-/* === Twikoo 评论（仅评论框） === */
 /* === 密码保护门禁 === */
 .password-gate {
     margin: 40px 0 80px;
@@ -390,9 +389,9 @@ layout: default
             <h4>{{ site.author }}</h4>
             <p>网络工程师，专注于数据中心网络、AI算力架构、路由交换与Linux运维</p>
             <div class="author-links">
-                <a href=""><i class="fab fa-github"></i></a>
-                <a href=""><i class="fab fa-linkedin"></i></a>
-                <a href=""><i class="fas fa-envelope"></i></a>
+                <a href="https://github.com/cxy-yao" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:{{ site.email | default: '' }}"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
     </div>
@@ -592,6 +591,26 @@ window.addEventListener('scroll', () => {
     --waline-badge-color: #3b82f6;
     --waline-warning-bg-color: rgba(245,158,11,0.15);
     --waline-warning-color: #f59e0b;
+}
+/* 亮色模式 Waline */
+[data-theme="light"] #waline {
+    --waline-bg-color: #ffffff;
+    --waline-bg-color-light: rgba(255,255,255,0.8);
+    --waline-bg-color-hover: rgba(241,245,249,0.9);
+    --waline-color: #1e293b;
+    --waline-white: #334155;
+    --waline-dark-grey: #64748b;
+    --waline-light-grey: #94a3b8;
+    --waline-border-color: rgba(0,0,0,0.1);
+    --waline-theme-color: #1d4ed8;
+    --waline-active-color: #2563eb;
+    --waline-box-shadow: none;
+    --waline-bq-color: rgba(29,78,216,0.1);
+    --waline-code-bg-color: #f1f5f9;
+    --waline-info-bg-color: #f8fafc;
+    --waline-info-color: #64748b;
+    --waline-disable-bg-color: rgba(100,116,139,0.1);
+    --waline-disable-color: #94a3b8;
 }
 </style>
 <script>
