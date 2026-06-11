@@ -152,7 +152,10 @@ body {
 }
 .logo-text {
     font-size: 1.5rem; font-weight: 700;
-    color: #ffffff;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 .nav-links { display: flex; gap: 4px; }
 .nav-link {
@@ -434,7 +437,7 @@ body {
         [data-theme="light"] .nav-links { background: rgba(255, 255, 255, 0.95); }
         [data-theme="light"] .nav-link { color: #1e293b; }
         [data-theme="light"] .nav-link:hover, [data-theme="light"] .nav-link.active { color: #0f172a; background: rgba(0,0,0,0.05); }
-        [data-theme="light"] .logo-text { color: #0f172a; }
+        [data-theme="light"] .logo-text { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .nav-links.open { display: flex; }
     .mobile-toggle { display: block; }
     .container { padding: 0 18px; }
