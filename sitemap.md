@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: 站点地图
 permalink: /sitemap/
 description: 博客所有文章的完整列表
@@ -125,7 +125,7 @@ description: 博客所有文章的完整列表
         <span class="sitemap-stat-label">个标签</span>
     </div>
     <div class="sitemap-stat">
-        <span class="sitemap-stat-num">{{ site.posts | map: 'word_count' | compact | sum | default: 0 | divided_by: 1000 | round: 1 }}k+</span>
+        <span class="sitemap-stat-num">{{ site.posts | map: 'content' | join: ' ' | number_of_words | divided_by: 1000 | round: 1 }}k+</span>
         <span class="sitemap-stat-label">总字数</span>
     </div>
 </div>
