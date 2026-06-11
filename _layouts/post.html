@@ -323,23 +323,14 @@ layout: default
     padding-top: 40px;
     border-top: 1px solid var(--glass-border);
 }
-/* 评论标题 - 移到左上角 */
-#waline {
-    display: flex !important;
-    flex-direction: column !important;
-}
+/* 评论计数 */
 .wl-count {
-    order: 1 !important;
     color: var(--text-primary) !important;
     font-size: 1.2rem !important;
     font-weight: 700 !important;
     margin-bottom: 20px !important;
 }
 .wl-count span { background: var(--gradient-main) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
-/* Waline面板排序 */
-.wl-panel { order: 2 !important; }
-.wl-cards { order: 3 !important; }
-.wl-pager { order: 4 !important; }
 /* 面板/输入区 */
 .wl-panel {
     background: var(--bg-card) !important;
@@ -805,5 +796,19 @@ Waline.init({
         uploadImage: '上传图片',
     },
 });
+// 将评论计数移到最上面
+(function() {
+    var check = setInterval(function() {
+        var waline = document.getElementById('waline');
+        var count = waline && waline.querySelector('.wl-count');
+        var panel = waline && waline.querySelector('.wl-panel');
+        if (count && panel && count !== waline.firstChild) {
+            waline.insertBefore(count, waline.firstChild);
+            clearInterval(check);
+        }
+    }, 200);
+    // 最多查 5 秒
+    setTimeout(function() { clearInterval(check); }, 5000);
+})();
 </script>
 {% endif %}
