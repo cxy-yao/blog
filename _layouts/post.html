@@ -317,7 +317,203 @@ layout: default
     .password-gate { padding: 60px 24px 40px; }
     .password-card h3 { font-size: 1.1rem; }
 }
-/* === Waline 评论（完整显示） === */
+/* === Waline 评论（主题美化） === */
+.wl-container {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--glass-border);
+}
+/* 评论标题 */
+.wl-count {
+    color: var(--text-primary) !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 20px;
+}
+.wl-count span { background: var(--gradient-main) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
+/* 面板/输入区 */
+.wl-panel {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    backdrop-filter: blur(16px) !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+}
+/* 输入框 */
+.wl-textarea {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 0.95rem !important;
+    padding: 14px !important;
+    min-height: 100px !important;
+    transition: border-color 0.3s ease !important;
+}
+.wl-textarea:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
+}
+.wl-textarea::placeholder { color: var(--text-muted) !important; }
+/* 昵称/邮箱/网址输入行 */
+.wl-meta-input {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 0.9rem !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.3s ease !important;
+}
+.wl-meta-input:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
+}
+/* 提交按钮 */
+.wl-submit {
+    background: var(--gradient-main) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 28px !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    font-family: var(--font-sans) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 14px rgba(59,130,246,0.3) !important;
+}
+.wl-submit:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(59,130,246,0.4) !important;
+}
+/* 评论卡片 */
+.wl-card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    backdrop-filter: blur(16px) !important;
+    margin-bottom: 16px !important;
+    padding: 20px 24px !important;
+    transition: all 0.3s ease !important;
+}
+.wl-card:hover {
+    border-color: rgba(59,130,246,0.15) !important;
+    background: var(--bg-card-hover) !important;
+}
+/* 评论头部 */
+.wl-header {
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 14px !important;
+}
+.wl-header .wl-nick {
+    color: var(--accent-blue) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+}
+.wl-header .wl-time {
+    color: var(--text-muted) !important;
+    font-size: 0.82rem !important;
+}
+/* 评论内容 */
+.wl-content {
+    color: var(--text-secondary) !important;
+    line-height: 1.8 !important;
+    font-size: 0.95rem !important;
+}
+.wl-content p { margin-bottom: 8px !important; }
+/* 评论底部操作 */
+.wl-footer {
+    border-top: 1px solid var(--glass-border) !important;
+    padding-top: 12px !important;
+    margin-top: 12px !important;
+}
+.wl-footer a {
+    color: var(--text-muted) !important;
+    font-size: 0.85rem !important;
+    transition: color 0.2s !important;
+}
+.wl-footer a:hover { color: var(--accent-blue) !important; }
+/* 头像 */
+.wl-avatar {
+    border-radius: 50% !important;
+    border: 2px solid var(--glass-border) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+/* 回复 */
+.wl-quote {
+    background: var(--bg-secondary) !important;
+    border-left: 3px solid var(--accent-cyan) !important;
+    border-radius: 6px !important;
+    padding: 10px 16px !important;
+    margin-bottom: 12px !important;
+}
+.wl-quote .wl-nick { color: var(--accent-cyan) !important; font-weight: 600 !important; }
+/* 分页器 */
+.wl-pager {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin-top: 24px !important;
+}
+.wl-pager .wl-btn {
+    background: var(--bg-card) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    transition: all 0.2s !important;
+}
+.wl-pager .wl-btn:hover {
+    background: rgba(59,130,246,0.1) !important;
+    border-color: var(--accent-blue) !important;
+    color: var(--accent-blue) !important;
+}
+.wl-pager .wl-btn.active {
+    background: var(--gradient-main) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+}
+/* 表情选择器 */
+.wl-emoji-popover {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+}
+/* 隐藏不需要的元素 */
+/* 评分/反应区 */
+.wl-reaction, .wl-star-rate, [class*="wl-rate"] { display: none !important; }
+/* Waline 底部链接 */
+.wl-powered { display: none !important; }
+/* 登录区域（简化） */
+.wl-login { 
+    margin-top: 12px !important;
+    padding: 8px 0 !important;
+}
+.wl-login a {
+    color: var(--text-muted) !important;
+    font-size: 0.82rem !important;
+}
+.wl-login a:hover { color: var(--accent-blue) !important; }
+
+/* 亮色模式适配 */
+[data-theme="light"] .wl-panel { background: var(--bg-card) !important; }
+[data-theme="light"] .wl-card { background: var(--bg-card) !important; }
+[data-theme="light"] .wl-textarea,
+[data-theme="light"] .wl-meta-input {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+[data-theme="light"] .wl-textarea:focus,
+[data-theme="light"] .wl-meta-input:focus {
+    border-color: var(--accent-blue) !important;
+}
 
 @media (max-width: 768px) {
     .post-title { font-size: clamp(1.6rem, 4vw, 2rem); }
