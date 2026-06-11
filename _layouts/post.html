@@ -698,7 +698,7 @@ window.addEventListener('scroll', () => {
     --waline-white: #e2e8f0;
     --waline-dark-grey: #94a3b8;
     --waline-light-grey: #64748b;
-    --waline-border-color: rgba(255,255,255,0.08);
+    --waline-border-color: rgba(148,163,184,0.3);
     --waline-theme-color: #3b82f6;
     --waline-active-color: #2563eb;
     --waline-box-shadow: none;
@@ -739,40 +739,13 @@ Waline.init({
     },
 });
 
-// Waline 渲染完成后：隐藏底部信息 + 按钮可见 + 移动评论计数
+// Waline 渲染完成后：隐藏底部信息 + 移动评论计数
 (function() {
     var check = setInterval(function() {
         var host = document.getElementById('waline');
         if (!host || !host.shadowRoot) return;
 
         var root = host.shadowRoot;
-
-        // 用 adoptedStyleSheets 注入按钮样式（持久化，重渲染不会丢失）
-        try {
-            var hasBtnStyle = root.adoptedStyleSheets &&
-                Array.from(root.adoptedStyleSheets).some(function(s) {
-                    return s._walineBtn;
-                });
-            if (!hasBtnStyle) {
-                var sheet = new CSSStyleSheet();
-                sheet._walineBtn = true;
-                sheet.replaceSync(
-                    '.wl-btn{background:#3b82f6!important;color:#fff!important;' +
-                    'border:none!important;border-radius:8px!important;' +
-                    'padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}' +
-                    '.wl-btn:hover{background:#2563eb!important}'
-                );
-                root.adoptedStyleSheets = [sheet].concat(
-                    Array.from(root.adoptedStyleSheets || [])
-                );
-            }
-        } catch(e) {
-            // adoptedStyleSheets 不支持时的备用方案
-            var s = root.querySelector('#wbtn-style') || root.appendChild(
-                Object.assign(document.createElement('style'), {id:'wbtn-style',
-                    textContent:'.wl-btn{background:#3b82f6!important;color:#fff!important;border:none!important;border-radius:8px!important;padding:8px 20px!important;font-size:14px!important;cursor:pointer!important}'})
-            );
-        }
 
         // 隐藏底部品牌信息
         var power = root.querySelector('.wl-power');
