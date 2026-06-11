@@ -29,7 +29,7 @@ exclude:
   - .obsidian/
 # Waline 评论系统（Vercel + PostgreSQL 部署）
 waline:
-  server_url: "https://waline-git-main-cxy-yaos-projects.vercel.app"
+  server_url: "https://waline-m38fkll3l-cxy-yaos-projects.vercel.app"
   lang: "zh-CN"
 
 plugins:
