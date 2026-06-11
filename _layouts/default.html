@@ -90,6 +90,84 @@ input, select, textarea { cursor: text !important; }
     100% { left: 100%; }
 }
 
+/* 骨架屏布局 */
+.skeleton-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 28px 80px;
+    margin: 0 -28px;
+    overflow: hidden;
+}
+.skeleton-section {
+    padding: 60px 0;
+}
+.skeleton-row {
+    display: flex;
+    align-items: center;
+}
+.skeleton-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+.skeleton-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+}
+.skeleton-post-card {
+    background: var(--skeleton-base);
+    border-radius: var(--radius);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+}
+.skeleton-post-card::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+.skeleton-tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+.skeleton-popular-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+.skeleton-popular-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: var(--skeleton-base);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+}
+.skeleton-popular-item::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@media (max-width: 768px) {
+    .skeleton-hero { min-height: auto; padding: 100px 18px 60px; }
+    .skeleton-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .skeleton-grid-2 { grid-template-columns: 1fr; }
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 /* === 背景轮播 === */
@@ -500,7 +578,89 @@ body {
     <main class="main-content">
         <div class="container" id="mainContainer">
             <div class="skeleton-wrapper loading" id="pageSkeleton">
-                <div class="skeleton-block" style="height: 60vh; border-radius: 16px;"></div>
+                <!-- Hero 骨架 -->
+                <div class="skeleton-hero">
+                    <div class="skeleton-block" style="width: 220px; height: 36px; border-radius: 28px; margin: 0 auto 32px;"></div>
+                    <div class="skeleton-block" style="width: 55%; height: 70px; border-radius: 14px; margin: 0 auto 18px;"></div>
+                    <div class="skeleton-block" style="width: 35%; height: 44px; border-radius: 12px; margin: 0 auto 24px;"></div>
+                    <div class="skeleton-block" style="width: 65%; height: 18px; border-radius: 6px; margin: 0 auto 10px;"></div>
+                    <div class="skeleton-block" style="width: 45%; height: 18px; border-radius: 6px; margin: 0 auto 36px;"></div>
+                    <!-- Stats -->
+                    <div class="skeleton-row" style="justify-content: center; gap: 40px; margin-bottom: 44px;">
+                        <div style="text-align: center;"><div class="skeleton-block" style="width: 80px; height: 44px; border-radius: 8px; margin: 0 auto 8px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; margin: 0 auto;"></div></div>
+                        <div class="skeleton-block" style="width: 1px; height: 48px; border-radius: 0;"></div>
+                        <div style="text-align: center;"><div class="skeleton-block" style="width: 80px; height: 44px; border-radius: 8px; margin: 0 auto 8px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; margin: 0 auto;"></div></div>
+                        <div class="skeleton-block" style="width: 1px; height: 48px; border-radius: 0;"></div>
+                        <div style="text-align: center;"><div class="skeleton-block" style="width: 80px; height: 44px; border-radius: 8px; margin: 0 auto 8px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; margin: 0 auto;"></div></div>
+                        <div class="skeleton-block" style="width: 1px; height: 48px; border-radius: 0;"></div>
+                        <div style="text-align: center;"><div class="skeleton-block" style="width: 80px; height: 44px; border-radius: 8px; margin: 0 auto 8px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; margin: 0 auto;"></div></div>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="skeleton-row" style="justify-content: center; gap: 20px;">
+                        <div class="skeleton-block" style="width: 160px; height: 52px; border-radius: 10px;"></div>
+                        <div class="skeleton-block" style="width: 140px; height: 52px; border-radius: 10px;"></div>
+                    </div>
+                </div>
+
+                <!-- 分类骨架 -->
+                <div class="skeleton-section">
+                    <div class="skeleton-block" style="width: 160px; height: 30px; border-radius: 8px; margin-bottom: 28px;"></div>
+                    <div class="skeleton-grid-4">
+                        <div class="skeleton-block" style="height: 110px; border-radius: 12px;"></div>
+                        <div class="skeleton-block" style="height: 110px; border-radius: 12px;"></div>
+                        <div class="skeleton-block" style="height: 110px; border-radius: 12px;"></div>
+                        <div class="skeleton-block" style="height: 110px; border-radius: 12px;"></div>
+                    </div>
+                </div>
+
+                <!-- 文章列表骨架 -->
+                <div class="skeleton-section">
+                    <div class="skeleton-block" style="width: 160px; height: 30px; border-radius: 8px; margin-bottom: 28px;"></div>
+                    <div class="skeleton-grid-2">
+                        <div class="skeleton-post-card">
+                            <div class="skeleton-block" style="width: 45%; height: 18px; border-radius: 6px; margin-bottom: 20px;"></div>
+                            <div class="skeleton-block" style="width: 80%; height: 26px; border-radius: 8px; margin-bottom: 16px;"></div>
+                            <div class="skeleton-block" style="width: 100%; height: 14px; border-radius: 6px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-block" style="width: 85%; height: 14px; border-radius: 6px; margin-bottom: 20px;"></div>
+                            <div class="skeleton-row" style="gap: 8px;">
+                                <div class="skeleton-block" style="width: 55px; height: 24px; border-radius: 20px;"></div>
+                                <div class="skeleton-block" style="width: 70px; height: 24px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-post-card">
+                            <div class="skeleton-block" style="width: 45%; height: 18px; border-radius: 6px; margin-bottom: 20px;"></div>
+                            <div class="skeleton-block" style="width: 80%; height: 26px; border-radius: 8px; margin-bottom: 16px;"></div>
+                            <div class="skeleton-block" style="width: 100%; height: 14px; border-radius: 6px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-block" style="width: 85%; height: 14px; border-radius: 6px; margin-bottom: 20px;"></div>
+                            <div class="skeleton-row" style="gap: 8px;">
+                                <div class="skeleton-block" style="width: 55px; height: 24px; border-radius: 20px;"></div>
+                                <div class="skeleton-block" style="width: 70px; height: 24px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 标签骨架 -->
+                <div class="skeleton-section">
+                    <div class="skeleton-block" style="width: 160px; height: 30px; border-radius: 8px; margin-bottom: 28px;"></div>
+                    <div class="skeleton-tags-cloud">
+                        <div class="skeleton-block" style="width: 100px; height: 38px; border-radius: 28px;"></div>
+                        <div class="skeleton-block" style="width: 130px; height: 38px; border-radius: 28px;"></div>
+                        <div class="skeleton-block" style="width: 80px; height: 38px; border-radius: 28px;"></div>
+                        <div class="skeleton-block" style="width: 110px; height: 38px; border-radius: 28px;"></div>
+                        <div class="skeleton-block" style="width: 140px; height: 38px; border-radius: 28px;"></div>
+                    </div>
+                </div>
+
+                <!-- 热门文章骨架 -->
+                <div class="skeleton-section">
+                    <div class="skeleton-block" style="width: 160px; height: 30px; border-radius: 8px; margin-bottom: 28px;"></div>
+                    <div class="skeleton-popular-list">
+                        <div class="skeleton-popular-item"><div class="skeleton-block" style="width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;"></div><div class="skeleton-block" style="flex: 1; height: 16px; border-radius: 6px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; flex-shrink: 0;"></div></div>
+                        <div class="skeleton-popular-item"><div class="skeleton-block" style="width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;"></div><div class="skeleton-block" style="flex: 1; height: 16px; border-radius: 6px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; flex-shrink: 0;"></div></div>
+                        <div class="skeleton-popular-item"><div class="skeleton-block" style="width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;"></div><div class="skeleton-block" style="flex: 1; height: 16px; border-radius: 6px;"></div><div class="skeleton-block" style="width: 60px; height: 14px; border-radius: 4px; flex-shrink: 0;"></div></div>
+                    </div>
+                </div>
             </div>
             <div style="opacity: 0; transition: opacity 0.5s ease;" id="realContent">
             {{ content }}
